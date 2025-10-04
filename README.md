@@ -10,7 +10,7 @@ html, body {
   height: 100%;
   font-family: 'Orbitron', monospace;
   background: #0a0f14;
-  color: #c9d1d9;
+  color: #00ffae;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -61,14 +61,14 @@ body::before {
   color: #00ffae;
   font-size: 20px;
   text-align: center;
-  width: 180px;      /* mismo ancho */
-  height: 120px;     /* mismo alto */
+  width: 180px;
+  height: 120px;
   margin: 10px;
   user-select: none;
-  transition: transform 0.2s;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  transition: transform 0.2s;
 }
 
 .sensor-box:hover {
@@ -121,51 +121,36 @@ body::before {
   user-select: none;
 }
 
-.electronic-dot {
-  width: 10px;
-  height: 10px;
-  background: #00ffae;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #00ffae, 0 0 15px #00ffae80;
-  position: absolute;
-  animation: pulse 3s infinite alternate;
-}
-
-.electronic-dot:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
-.electronic-dot:nth-child(2) { top: 30%; right: 8%; animation-delay: 1.5s; }
-.electronic-dot:nth-child(3) { bottom: 15%; left: 12%; animation-delay: 0.8s; }
-.electronic-dot:nth-child(4) { bottom: 25%; right: 15%; animation-delay: 2.3s; }
-
-@keyframes pulse {
-  from { box-shadow: 0 0 8px #00ffae, 0 0 15px #00ffae80; }
-  to { box-shadow: 0 0 15px #00ffae, 0 0 30px #00ffaecc; }
-}
-
-/* Video fullscreen */
-#videoContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
+#hackScreen {
   display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  color: #00ffae;
+  z-index: 9999;
+  font-family: 'Orbitron', monospace;
+  overflow: hidden;
 }
 
-#videoContainer iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
+#hackScreen p {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.5;
+  animation: glitch 0.3s infinite;
 }
 
+@keyframes glitch {
+  0% { opacity: 1; transform: translate(0,0); }
+  20% { opacity: 0.8; transform: translate(-2px,2px); }
+  40% { opacity: 1; transform: translate(2px,-2px); }
+  60% { opacity: 0.8; transform: translate(-1px,1px); }
+  80% { opacity: 1; transform: translate(1px,-1px); }
+  100% { opacity: 1; transform: translate(0,0); }
+}
 </style>
 </head>
 <body>
-
-<div class="electronic-dot"></div>
-<div class="electronic-dot"></div>
-<div class="electronic-dot"></div>
-<div class="electronic-dot"></div>
 
 <div class="card">
   <div class="sensor-box">
@@ -177,35 +162,46 @@ body::before {
 
   <div class="message-box">
     <h2>Descubre Telecomunicaciones</h2>
-    <button onclick="playVideo()">Información</button>
+    <button onclick="hackScreen()">Información</button>
   </div>
 </div>
 
 <div class="footer">ESP8266 Dashboard — Tema Neon</div>
 
-<div id="videoContainer"></div>
+<div id="hackScreen"></div>
 
 <script>
-  // Actualiza sensores
-  function fetchSensorData(){
-    document.getElementById('temp').textContent = (20 + Math.random()*5).toFixed(1);
-    document.getElementById('hum').textContent = (40 + Math.random()*10).toFixed(1);
-  }
-  setInterval(fetchSensorData, 3000);
-  fetchSensorData();
+function fetchSensorData(){
+  document.getElementById('temp').textContent = (20 + Math.random()*5).toFixed(1);
+  document.getElementById('hum').textContent = (40 + Math.random()*10).toFixed(1);
+}
+setInterval(fetchSensorData, 3000);
+fetchSensorData();
 
-  // Video fullscreen sin controles
-  function playVideo() {
-    const container = document.getElementById('videoContainer');
-    container.style.display = 'block';
-    container.innerHTML = `
-      <iframe 
-        src="https://www.youtube.com/embed/Ae2uKbFbt1U?autoplay=1&controls=0&modestbranding=1&rel=0&fs=1&disablekb=1" 
-        allow="autoplay; fullscreen; encrypted-media" allowfullscreen>
-      </iframe>
-    `;
+function hackScreen() {
+  const screen = document.getElementById('hackScreen');
+  screen.style.display = 'block';
+  screen.innerHTML = '';
+
+  const messages = [
+    "ESTÁS SIENDO HACKEADO...",
+    "ACCESO NO AUTORIZADO DETECTADO",
+    "INTERFERENCIA EN RED...",
+    "ERROR DE SISTEMA...",
+    "CONEXIÓN COMPROMETIDA..."
+  ];
+
+  // Crea mensajes al azar repetidos
+  for(let i=0; i<50; i++) {
+    const p = document.createElement('p');
+    p.textContent = messages[Math.floor(Math.random() * messages.length)];
+    p.style.position = 'absolute';
+    p.style.top = Math.random()*100 + '%';
+    p.style.left = Math.random()*100 + '%';
+    p.style.fontSize = (14 + Math.random()*20) + 'px';
+    screen.appendChild(p);
   }
+}
 </script>
-
 </body>
 </html>
