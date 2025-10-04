@@ -52,6 +52,7 @@
       width: 800px;
       max-width: 95vw;
       z-index: 1;
+      flex-direction: column;
     }
 
     .sensor-column {
@@ -64,7 +65,7 @@
     }
 
     .message-box {
-      width: 250px;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -82,10 +83,11 @@
       display: flex;
       flex-direction: column;
       width: 100%;
+      align-items: center;
     }
 
     input[type=text] {
-      width: 100%;
+      width: 250px;
       padding: 12px 15px;
       border: none;
       border-radius: 7px;
@@ -134,6 +136,7 @@
       max-width: 180px;
       min-width: 180px;
       user-select: none;
+      margin-bottom: 15px;
     }
 
     .footer {
@@ -168,6 +171,15 @@
       from { box-shadow: 0 0 8px #00ffae, 0 0 15px #00ffae80; }
       to { box-shadow: 0 0 15px #00ffae, 0 0 30px #00ffaecc; }
     }
+
+    /* Contenedor del video */
+    #videoContainer iframe {
+      margin-top: 20px;
+      width: 560px;
+      height: 315px;
+      border: none;
+    }
+
   </style>
 </head>
 <body>
@@ -182,39 +194,44 @@
     <div class="sensor-box">
       🌡️ Temperatura:<br><span id="temp">--</span> °C
     </div>
+    <div class="sensor-box">
+      💧 Humedad:<br><span id="hum">--</span> %
+    </div>
   </div>
 
   <div class="message-box">
     <h2>📡 Enviar un mensaje</h2>
-    <form onsubmit="redirectToVideo(); return false;">
+    <form onsubmit="playVideo(); return false;">
       <input type="text" name="msg" placeholder="Escribe tu mensaje..." required>
       <input type="submit" value="Enviar">
     </form>
-  </div>
-
-  <div class="sensor-column">
-    <div class="sensor-box">
-      💧 Humedad:<br><span id="hum">--</span> %
-    </div>
+    <div id="videoContainer"></div>
   </div>
 </div>
 
 <div class="footer">ESP8266 MQTT Web Sender — Tema Electrónico Neon</div>
 
 <script>
-// Simula datos de sensor
-function fetchSensorData(){
-  document.getElementById('temp').textContent = (20 + Math.random()*5).toFixed(1);
-  document.getElementById('hum').textContent = (40 + Math.random()*10).toFixed(1);
-}
-setInterval(fetchSensorData, 3000);
-fetchSensorData();
+  // Simula datos de sensor
+  function fetchSensorData(){
+    document.getElementById('temp').textContent = (20 + Math.random()*5).toFixed(1);
+    document.getElementById('hum').textContent = (40 + Math.random()*10).toFixed(1);
+  }
+  setInterval(fetchSensorData, 3000);
+  fetchSensorData();
 
-// Redirige al video al hacer clic en “Enviar”
-function redirectToVideo() {
-  const videoUrl = "https://www.youtube.com/watch?v=Ae2uKbFbt1U";
-  window.location.href = videoUrl;
-}
+  // Incrusta y reproduce el video dentro de la página
+  function playVideo() {
+    const videoContainer = document.getElementById('videoContainer');
+    videoContainer.innerHTML = `
+      <iframe 
+        src="https://www.youtube.com/embed/Ae2uKbFbt1U?autoplay=1&mute=1&rel=0" 
+        title="YouTube video player" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    `;
+  }
 </script>
 
 </body>
