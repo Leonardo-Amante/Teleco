@@ -9,7 +9,6 @@
   --card:#0f1724;
   --accent:#00c2a8;
   --muted:#98a6b3;
-  --danger:#ff4d6d;
 }
 body{
   margin:0;
@@ -111,16 +110,16 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:14px;height:14px
   </aside>
 
   <div class="footer">
-    Compatible con GitHub Pages. Requiere interacción del usuario para reproducir audio.
+    Compatible con GitHub Pages. Haz clic en Escuchar para permitir audio.
   </div>
 </div>
 
 <script>
-// Lista de estaciones (puedes agregar tus propias URLs)
+// Estaciones reales 24/7
 const stationList = [
-  {name:"Estación 1 - Jazz", url:"https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3"},
-  {name:"Estación 2 - Pop", url:"https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3"},
-  {name:"Estación 3 - Rock", url:"https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_1MG.mp3"}
+  {name:"Radio Paradise - Rock/Pop", url:"http://stream.radioparadise.com/mp3-128"},
+  {name:"BBC Radio 1", url:"http://stream.live.vc.bbcmedia.co.uk/bbc_radio_one"},
+  {name:"Smooth Jazz Florida", url:"http://icecast.omroep.nl/radio1-bb-mp3"} 
 ];
 
 const stationsDiv = document.getElementById('stations');
@@ -148,12 +147,10 @@ stationList.forEach((s,i)=>{
   stationsDiv.appendChild(btn);
 });
 
-// Update active button
 function updateStationButtons(){
   Array.from(stationsDiv.children).forEach((b,i)=>b.classList.toggle('active',i===currentStation));
 }
 
-// Create audio
 function createAudio(url){
   if(audio){try{audio.pause();audio.src='';audio.load();}catch(e){}}
   audio = new Audio(url);
@@ -162,7 +159,6 @@ function createAudio(url){
   audio.addEventListener('playing',()=>{isPlaying=true;setStatus('Reproduciendo');nowPlaying.textContent=stationList[currentStation].name;});
   audio.addEventListener('pause',()=>{isPlaying=false;setStatus('Pausado');});
   audio.addEventListener('error',()=>{setStatus('Error');});
-  // Analyser
   try{
     if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
     if(sourceNode) sourceNode.disconnect();
@@ -191,29 +187,19 @@ function startVUMeter(){
 }
 
 // Controls
-playBtn.addEventListener('click',()=>{playCurrent();});
+playBtn.addEventListener('click', async ()=>{
+    if(!audio){createAudio(stationList[currentStation].url);}
+    try {await audio.play();} catch(e){alert("Haz clic nuevamente para permitir audio");}
+});
 pauseBtn.addEventListener('click',()=>{if(audio) audio.pause();});
 stopBtn.addEventListener('click',()=>{if(audio){audio.pause();audio.src='';stopVUMeter();}setStatus('Detenido');});
 volume.addEventListener('input',()=>{if(audio) audio.volume=parseFloat(volume.value);volPct.textContent=Math.round(volume.value*100)+'%';});
 
 // Playback
-function playCurrent(){
-  const station = stationList[currentStation];
-  if(!station) return;
-  if(audio && isPlaying && audio.src===station.url) return;
-  createAudio(station.url);
-  audio.play().catch(()=>{setStatus('Haga clic de nuevo para permitir audio')});
-}
-
-// Change station
-function changeStation(index){
-  currentStation=index;
-  updateStationButtons();
-  playCurrent();
-}
-
-// stop meter
+function changeStation(index){currentStation=index;updateStationButtons();playCurrent();}
+function playCurrent(){const s=stationList[currentStation];if(!s) return;if(audio && isPlaying && audio.src===s.url) return;createAudio(s.url);audio.play().catch(()=>setStatus('Clic para permitir audio'));}
 function stopVUMeter(){if(vuRaf) cancelAnimationFrame(vuRaf);vu.style.width='0%';}
+function setStatus(txt){statusEl.textContent=txt;}
 
 // init
 updateStationButtons();
