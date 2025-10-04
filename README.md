@@ -1,352 +1,297 @@
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Telecomunicaciones — Dashboard</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Simulación — Telecomunicaciones (Demo)</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
-body {
-  margin:0; padding:0;
-  font-family: 'Orbitron', monospace;
-  background:#0a0f14;
-  color:#c9d1d9;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  overflow:hidden;
-  position:relative;
-}
+  :root{
+    --neon:#00ffae;
+    --bg:#050607;
+    --danger:#ff0033;
+  }
 
-body::before {
-  content:"";
-  position:absolute;
-  top:0; left:0; right:0; bottom:0;
-  background:
-    linear-gradient(90deg, rgba(0,255,174,0.05) 1px, transparent 1px),
-    linear-gradient(rgba(0,255,174,0.05) 1px, transparent 1px);
-  background-size:60px 60px,60px 60px;
-  z-index:0;
-}
+  html,body{height:100%;margin:0;background:var(--bg);font-family:'Orbitron',monospace;color:#dbeee6;overflow:hidden}
+  .center-wrap{height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
 
-/* Card & sensors (green boxes) */
-.card {
-  position:relative;
-  background:#161b22;
-  border:1px solid #00ffae;
-  border-radius:15px;
-  padding:40px 50px;
-  box-shadow:0 0 15px #00ffae80,0 0 30px #00ffae50,0 0 45px #00ffae30;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:60px;
-  width:800px;
-  max-width:95vw;
-  z-index:1;
-}
+  /* Dashboard (keeps green boxes look) */
+  .card{
+    display:flex;gap:48px;align-items:center;background:linear-gradient(180deg,#101418,#0b0d0f);
+    border:1px solid rgba(0,255,174,0.07);padding:28px;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,0.6);
+    max-width:94vw;width:900px;z-index:1;
+  }
+  .sensor{width:180px;height:120px;border-radius:12px;background:#0f161f;border:1px solid var(--neon);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--neon);font-size:18px;box-shadow:0 6px 20px rgba(0,255,174,0.06)}
+  .center{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .cta{background:var(--neon);color:#000;border:none;padding:10px 20px;border-radius:8px;font-weight:800;cursor:pointer}
+  .footer{position:fixed;left:0;bottom:10px;width:100%;text-align:center;color:#9aa6ad;font-size:12px;z-index:1}
 
-.sensor-column {
-  display:flex;
-  flex-direction:column;
-  max-width:180px;
-  min-width:180px;
-  justify-content:center;
-  align-items:center;
-}
+  /* CONSENT modal (must confirm to run demo) */
+  #consent {
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:200000;
+    background: rgba(0,0,0,0.6); padding:20px; box-sizing:border-box;
+  }
+  .consentBox{
+    width:min(720px,92vw); background:linear-gradient(#081014,#061014); border-radius:12px; padding:22px; color:#e6fff4;
+    border:1px solid rgba(0,255,174,0.06); box-shadow:0 10px 40px rgba(0,0,0,0.7); text-align:left;
+  }
+  .consentBox h3{margin:0 0 8px;color:var(--neon)}
+  .consentButtons{display:flex;gap:12px; margin-top:16px}
 
-.sensor-box {
-  background:#0f161f;
-  border:1px solid #00ffae;
-  border-radius:15px;
-  padding:20px 15px;
-  box-shadow:0 0 10px #00ffae,0 0 20px #00ffae88;
-  color:#00ffae;
-  font-size:20px;
-  text-shadow:0 0 8px #00ffae,0 0 12px #00ffae70;
-  text-align:center;
-  width:180px;
-  height:120px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  transition: opacity .35s ease, transform .2s ease;
-}
+  /* SIMULATED FULLSCREEN OVERLAY (very immersive) */
+  #simOverlay{
+    position:fixed; inset:0; z-index:150000; display:none; background:#000; color:#fff; overflow:hidden;
+  }
+  .overlay-left{position:absolute;left:0;top:0;width:42%;height:100%;padding:28px;box-sizing:border-box;pointer-events:none}
+  .overlay-right{position:absolute;right:0;top:0;width:26%;height:100%;padding:26px;box-sizing:border-box;pointer-events:none}
+  .overlay-center{position:absolute;left:42%;right:26%;top:0;bottom:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 
-.sensor-box.hidden {
-  opacity: 0 !important;
-  pointer-events: none;
-}
+  .spamLine{color:var(--danger);font-weight:900;font-size:14px;text-transform:uppercase;margin-bottom:6px;
+    text-shadow:0 0 12px rgba(255,0,60,0.9);opacity:0;transform:translateX(-120%)}
+  .binLine{color:#ff5a6a;font-weight:700;font-size:12px;margin-bottom:6px;opacity:0;transform:translateY(-20px)}
 
-.center {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  min-width:220px;
-}
+  .bigText{font-size:68px;font-weight:900;color:var(--danger);text-shadow:0 0 30px rgba(255,0,60,0.9);text-align:center;pointer-events:none}
+  .watermark{
+    position:fixed; left:16px; top:16px; background:rgba(255,255,255,0.06); color:#fff; padding:6px 10px; border-radius:8px;
+    border:1px solid rgba(255,255,255,0.04); z-index:200001; backdrop-filter: blur(4px); font-weight:800; letter-spacing:1px;
+  }
 
-.center h2 {
-  margin-bottom:20px;
-  color:#00ffae;
-}
+  /* always-visible exit (clear) and info */
+  #exitBtn{
+    position:fixed; right:16px; top:16px; z-index:200002; background:rgba(0,0,0,0.6); color:#fff; border:1px solid rgba(255,255,255,0.08);
+    padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:800; display:none;
+  }
 
-.cta {
-  background:#00ffae;
-  color:#000;
-  border:none;
-  padding:12px 25px;
-  font-size:17px;
-  border-radius:7px;
-  cursor:pointer;
-  font-weight:700;
-  letter-spacing:1px;
-  box-shadow:0 0 15px #00ffae;
-  transition: transform .2s;
-}
-.cta:hover{transform:translateY(-3px)}
+  /* animations when lines show */
+  .showLine{opacity:1; transform:translateX(0); transition: transform .34s cubic-bezier(.2,.9,.3,1), opacity .28s}
+  .showBin{opacity:1; transform:translateY(0); transition: all .45s linear}
 
-.footer {
-  margin-top:25px;
-  font-size:13px;
-  color:#8b949e;
-  text-align:center;
-  position:absolute;
-  bottom:15px;
-  width:100%;
-  left:0;
-  z-index:1;
-}
+  /* small flicker/shake */
+  .shake{animation:shakeAnim .6s cubic-bezier(.36,.07,.19,.97) infinite}
+  @keyframes shakeAnim{0%{transform:translate(0,0)}10%{transform:translate(-6px,4px)}20%{transform:translate(6px,-6px)}30%{transform:translate(-4px,6px)}40%{transform:translate(4px,-2px)}50%{transform:translate(-2px,2px)}100%{transform:translate(0,0)}}
 
-/* ---------------- EXTREME SCARE OVERLAY ---------------- */
-#scareOverlay {
-  position:fixed; inset:0;
-  display:none;
-  z-index:9999;
-  background:#000;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
+  /* bottom stream */
+  .streamArea{position:absolute;left:42%;right:26%;bottom:6vh;color:#ffb7b7;font-weight:800;pointer-events:none;text-align:left;padding-left:12px}
 
-/* spam left */
-.spamColumn {
-  position:absolute; left:0; top:0; height:100%; width:40%; z-index:6; pointer-events:none;
-  display:flex; align-items:flex-start; justify-content:flex-start; padding:40px 16px; box-sizing:border-box;
-  flex-direction:column;
-  gap:6px;
-}
-.spamLine {
-  color:#ff073a;
-  font-weight:900;
-  font-size:14px;
-  text-transform:uppercase;
-  text-shadow:0 0 8px rgba(255,0,60,0.9),0 0 22px rgba(255,0,60,0.12);
-  opacity:0.95;
-  white-space:nowrap;
-}
-
-/* binary right */
-.binaryRain{
-  position:absolute; right:0; top:0; width:22%; height:100%; z-index:5; pointer-events:none; padding:24px;
-  display:flex; flex-direction:column; gap:4px; align-items:flex-end; justify-content:flex-start;
-  color:#ff3a4a; font-weight:700; font-size:12px; text-shadow:0 0 8px rgba(255,0,60,0.2)
-}
-
-/* big message */
-.bigmsg{
-  position:absolute; left:50%; top:18%; transform:translateX(-50%);
-  z-index:8; color:#ff073a; font-size:64px; font-weight:900;
-  text-shadow:0 0 18px rgba(255,0,60,0.95),0 0 48px rgba(255,0,60,0.35);
-  letter-spacing:2px;
-}
-
-/* flicker bars and scanlines */
-.scanFlash{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ff0033,transparent);z-index:9;opacity:0.3}
-.scanFlash{top:25%}
-.scanFlash:nth-of-type(2){top:55%;animation-delay:.3s}
-
-/* blood tint */
-.bloodSplatter{position:absolute;inset:0;z-index:4;pointer-events:none;background-image:
-  radial-gradient(circle at 20% 10%, rgba(255,0,0,0.08), transparent 5%),
-  radial-gradient(circle at 80% 90%, rgba(255,0,0,0.06), transparent 8%);mix-blend-mode:screen}
-
-/* shake animation */
-.shakeOverlay{animation:shakeAnim .6s cubic-bezier(.36,.07,.19,.97) infinite}
-@keyframes shakeAnim{
-  0%{transform:translate(0,0)}10%{transform:translate(-10px,8px)}20%{transform:translate(8px,-8px)}30%{transform:translate(-6px,6px)}40%{transform:translate(6px,-3px)}50%{transform:translate(-3px,2px)}100%{transform:translate(0,0)}
-}
-
-/* stream (bottom center) */
-.stream{position:absolute;bottom:5vh;left:42%;right:2%;z-index:10;color:#ffb7b7;font-weight:800;pointer-events:none;font-size:16px;text-align:left}
-
-/* strong red overlay flash */
-.redPulse{animation:redPulse 350ms ease-in-out 3}
-@keyframes redPulse{0%{background:rgba(255,0,0,0)}50%{background:rgba(255,0,0,0.12)}100%{background:rgba(255,0,0,0)}}
-
-/* responsive tweaks */
-@media (max-width:720px){
-  .card{width:95vw;padding:16px}
-  .bigmsg{font-size:32px;top:10%}
-  .spamColumn{width:42%}
-  .binaryRain{display:none}
-}
+  @media (max-width:720px){
+    .bigText{font-size:34px}
+    .overlay-left{width:48%}
+    .overlay-right{display:none}
+    .overlay-center{left:48%;right:0}
+    .streamArea{left:48%;right:3%}
+  }
 </style>
 </head>
 <body>
+  <!-- watermark / demo label -->
+  <div class="watermark">SIMULACIÓN — DEMO (uso educativo/consentido)</div>
 
-<div class="card">
-  <div class="sensor-column">
-    <div class="sensor-box" id="sensorTemp">🌡️<br><span id="temp">-- °C</span></div>
+  <div class="center-wrap">
+    <div class="card" id="card">
+      <div class="sensor">🌡️<div id="temp" style="font-size:20px;margin-top:6px">-- °C</div></div>
+      <div class="center">
+        <h2 style="color:var(--neon);margin:0">Infórmate sobre Telecomunicaciones</h2>
+        <button class="cta" id="startDemo">Iniciar demo</button>
+      </div>
+      <div class="sensor">💧<div id="hum" style="font-size:20px;margin-top:6px">-- %</div></div>
+    </div>
   </div>
 
-  <div class="center">
-    <h2>Infórmate sobre nuestra carrera</h2>
-    <button class="cta" id="scareBtn">Información</button>
+  <div class="footer">ESP8266 Dashboard — Demo</div>
+
+  <!-- Consent modal (user must confirm) -->
+  <div id="consent">
+    <div class="consentBox" role="dialog" aria-modal="true">
+      <h3>AVISO — Modo Demostración</h3>
+      <p>Vas a iniciar una <strong>simulación visual y sonora</strong> diseñada para <strong>demostración/entrenamiento</strong>. Esta experiencia está <strong>marcada como SIMULACIÓN</strong> y no afecta sistemas reales.</p>
+      <p>¿Confirmas que mostrarás esto únicamente a personas que han dado su consentimiento o para uso educativo?</p>
+      <div class="consentButtons">
+        <button class="cta" id="consentYes">Sí, iniciar demo</button>
+        <button class="cta" id="consentNo" style="background:#444;color:#fff">No, cancelar</button>
+      </div>
+    </div>
   </div>
 
-  <div class="sensor-column">
-    <div class="sensor-box" id="sensorHum">💧<br><span id="hum">-- %</span></div>
+  <!-- Simulated fullscreen overlay -->
+  <div id="simOverlay" aria-hidden="true" role="dialog">
+    <div class="overlay-left" id="overlayLeft"></div>
+    <div class="overlay-right" id="overlayRight"></div>
+    <div class="overlay-center">
+      <div class="bigText" id="bigText">ESTÁS SIENDO DEMOSTRADO</div>
+    </div>
+    <div class="streamArea" id="streamArea"></div>
   </div>
-</div>
 
-<div class="footer">ESP8266 Dashboard — Tema Neon</div>
-
-<!-- overlay -->
-<div id="scareOverlay">
-  <div class="bloodSplatter"></div>
-  <div class="spamColumn" id="spamStream"></div>
-  <div class="binaryRain" id="binaryRain"></div>
-  <div class="bigmsg" id="bigMsg">ESTÁS SIENDO HACKEADO</div>
-  <div class="scanFlash"></div>
-  <div class="scanFlash"></div>
-  <div class="stream" id="streamText"></div>
-</div>
+  <button id="exitBtn">SALIR (demo)</button>
 
 <script>
-/* ---------------- sensors (simulated) ---------------- */
-function fetchSensorData(){
-  document.getElementById('temp').textContent=(18+Math.random()*10).toFixed(1)+' °C';
-  document.getElementById('hum').textContent=(30+Math.random()*30).toFixed(1)+' %';
-}
-setInterval(fetchSensorData,2400);
-fetchSensorData();
+  /* simulated sensors */
+  function updateSensors(){
+    document.getElementById('temp').textContent = (18 + Math.random()*10).toFixed(1) + ' °C';
+    document.getElementById('hum').textContent  = (30 + Math.random()*30).toFixed(1) + ' %';
+  }
+  setInterval(updateSensors, 2400);
+  updateSensors();
 
-/* ---------------- spam left ---------------- */
-const spamStream=document.getElementById('spamStream');
-const spamPhrases=[
-  "ACCESO NO AUTORIZADO +++",
-  "SISTEMA INTRUSO - IP: 192.168."+Math.floor(Math.random()*255)+"."+Math.floor(Math.random()*255),
-  "ENCRIPTANDO... [███▒▒▒▒]",
-  "ELIMINANDO BACKUPS...",
-  "ERROR 0xDEAD",
-  "CONEXION ROTA",
-  "403 FORBIDDEN"
-];
-function startSpam(){
-  spamStream.innerHTML='';
-  let count=0;
-  const spamTimer=setInterval(()=>{
-    const line=document.createElement('div');
-    line.className='spamLine';
-    line.textContent=spamPhrases[Math.floor(Math.random()*spamPhrases.length)];
-    spamStream.prepend(line);
-    if(spamStream.children.length>40) spamStream.removeChild(spamStream.lastChild);
-    count++; if(count>400) clearInterval(spamTimer);
-  },50);
-}
+  /* elements */
+  const consent = document.getElementById('consent');
+  const consentYes = document.getElementById('consentYes');
+  const consentNo = document.getElementById('consentNo');
+  const startDemo = document.getElementById('startDemo');
+  const sim = document.getElementById('simOverlay');
+  const leftCol = document.getElementById('overlayLeft');
+  const rightCol = document.getElementById('overlayRight');
+  const bigText = document.getElementById('bigText');
+  const exitBtn = document.getElementById('exitBtn');
+  const streamArea = document.getElementById('streamArea');
+  const card = document.getElementById('card');
 
-/* ---------------- binary rain ---------------- */
-const binaryRain=document.getElementById('binaryRain');
-function startBinary(){
-  binaryRain.innerHTML='';
-  const binTimer = setInterval(()=>{
-    const n=document.createElement('div');
-    n.textContent = (Math.random()>0.5? '1010' : '0101') + " "+Math.floor(Math.random()*9999);
-    n.style.opacity=0; n.style.transform='translateY(-40px)';
-    binaryRain.prepend(n);
-    requestAnimationFrame(()=>{ n.style.transition='all .5s linear'; n.style.opacity=1; n.style.transform='translateY(0)'; });
-    if(binaryRain.children.length>60) binaryRain.removeChild(binaryRain.lastChild);
-  },80);
-}
+  /* spam / binary / stream phrases */
+  const spamPhrases = [
+    "ACCESO NO AUTORIZADO +++",
+    "SISTEMA INTRUSO - IP: 192.168."+Math.floor(Math.random()*255)+"."+Math.floor(Math.random()*255),
+    "ENCRIPTANDO... [███▒▒▒▒]",
+    "ELIMINANDO BACKUPS...",
+    "ERROR 0xDEAD",
+    "CONEXION ROTA",
+    "403 FORBIDDEN"
+  ];
+  const binChoices = ['10101010','01010101','11001100','00110011'];
 
-/* ---------------- stream bottom center ---------------- */
-const streamText = document.getElementById('streamText');
-const streamPhrases = [
-  "ENCRIPTANDO SISTEMAS...",
-  "INTRUSIÓN: SERVIDOR CENTRAL",
-  "RESPUESTA: 0xFF00",
-  "ELIMINANDO TRAZAS",
-  "CONECTANDO RANSOM NET",
-  "CANTIDAD DE HOSTS: "+Math.floor(Math.random()*30+3)
-];
-function startStream(){
-  streamText.innerHTML='';
-  const t = setInterval(()=>{
-    const p=document.createElement('div');
-    p.textContent=streamPhrases[Math.floor(Math.random()*streamPhrases.length)];
-    streamText.prepend(p);
-    if(streamText.children.length>8) streamText.removeChild(streamText.lastChild);
-  },140);
-}
+  const streamPhrases = [
+    "ENCRIPTANDO SISTEMAS...",
+    "INTRUSIÓN: SERVIDOR CENTRAL",
+    "RESPUESTA: 0xFF00",
+    "ELIMINANDO TRAZAS",
+    "CONECTANDO RANSOM NET",
+    "HOSTS COMPROMETIDOS: " + (3 + Math.floor(Math.random()*40))
+  ];
 
-/* ---------------- big messages ---------------- */
-const bigMsg=document.getElementById('bigMsg');
-function playSequence(){
-  const msgs=["ESTÁS SIENDO HACKEADO","NO HAY SALIDA","SISTEMA COLAPSANDO","TODO HA SIDO TOMADO"];
-  let i=0;
-  const seq = setInterval(()=>{
-    bigMsg.textContent = msgs[i % msgs.length];
-    bigMsg.style.transform = `translateX(-50%) translateY(${Math.floor(Math.random()*12-6)}px) skewX(${Math.floor(Math.random()*12-6)}deg)`;
-    i++;
-    if(i> (msgs.length*6)) clearInterval(seq);
-  },800);
-}
+  let spamTimer, binTimer, streamTimer, flickerTimer, audioStop;
 
-/* ---------------- full screen "almost forced" ---------------- */
-const btn=document.getElementById('scareBtn');
-const overlay=document.getElementById('scareOverlay');
-const sensorBoxes = document.querySelectorAll('.sensor-box');
+  /* helpers */
+  const r = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
 
-async function enterFullScreen() {
-  try {
-    if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) {
-        // try to re-enter quickly
-        setTimeout(()=>{ if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); }, 60);
-      }
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' || e.key === 'F11') {
-        e.preventDefault();
-        if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-      }
-    });
-  } catch(e){ console.warn('fullscreen blocked', e); }
-}
+  /* create many spam lines quickly */
+  function startSpam(){
+    leftCol.innerHTML = '';
+    let count = 0;
+    spamTimer = setInterval(()=>{
+      const d = document.createElement('div');
+      d.className = 'spamLine'; d.textContent = (Math.random()>0.6? '!!! ' : '') + pick(spamPhrases) + (Math.random()>0.7? ' ### '+ r(1000,99999) : '');
+      leftCol.prepend(d);
+      // animate in next frame
+      requestAnimationFrame(()=> d.classList.add('showLine'));
+      if(leftCol.children.length > 80) leftCol.removeChild(leftCol.lastChild);
+      count++; if(count > 800) clearInterval(spamTimer);
+    }, 42);
+  }
 
-btn.addEventListener('click', async function(){
-  // hide/transparent the green sensor boxes (animate)
-  sensorBoxes.forEach(el=>{
-    el.classList.add('hidden'); // transitions to opacity:0
+  /* binary rain */
+  function startBinary(){
+    rightCol.innerHTML = '';
+    binTimer = setInterval(()=>{
+      const n = document.createElement('div'); n.className='binLine'; n.textContent = pick(binChoices) + ' ' + r(100,9999);
+      rightCol.prepend(n);
+      requestAnimationFrame(()=> n.classList.add('showBin'));
+      if(rightCol.children.length > 80) rightCol.removeChild(rightCol.lastChild);
+    }, 72);
+  }
+
+  /* bottom dramatic stream */
+  function startStream(){
+    streamArea.innerHTML = '';
+    streamTimer = setInterval(()=>{
+      const p = document.createElement('div'); p.textContent = pick(streamPhrases);
+      streamArea.prepend(p);
+      if(streamArea.children.length > 8) streamArea.removeChild(streamArea.lastChild);
+    }, 120);
+  }
+
+  /* big text flicker sequence */
+  function playBigSequence(){
+    const msgs = ["ESTÁS SIENDO DEMOSTRADO","NO HAY SALIDA","SISTEMA COLAPSANDO","TODO HA SIDO TOMADO"];
+    bigText.textContent = msgs[0];
+    let i = 1;
+    flickerTimer = setInterval(()=>{
+      bigText.textContent = msgs[i % msgs.length];
+      bigText.style.transform = `translateY(${r(-20,20)}px) skewX(${r(-8,8)}deg)`;
+      i++;
+      if(i > msgs.length * 6) clearInterval(flickerTimer);
+    }, 900);
+  }
+
+  /* simple audio (starts only after consent click) */
+  function startAudio(){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const baseO = ctx.createOscillator(); baseO.type='sine'; baseO.frequency.value = 35 + Math.random()*25;
+      const baseG = ctx.createGain(); baseG.gain.value = 0.0025;
+      baseO.connect(baseG); baseG.connect(ctx.destination); baseO.start();
+      // glitch beeps
+      const beep = setInterval(()=>{
+        const o = ctx.createOscillator(); o.type='square'; o.frequency.value = 400 + Math.random()*1200;
+        const g = ctx.createGain(); g.gain.value = 0.001 + Math.random()*0.004;
+        o.connect(g); g.connect(ctx.destination); o.start();
+        g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.12 + Math.random()*0.18);
+        setTimeout(()=>{ try{ o.stop(); }catch(e){} }, 300);
+      }, 220 + Math.random()*300);
+      audioStop = () => { clearInterval(beep); try{ baseO.stop(); ctx.close(); }catch(e){} };
+    }catch(e){ audioStop = ()=>{}; }
+  }
+
+  function stopAudio(){ if(typeof audioStop === 'function') audioStop(); audioStop = null; }
+
+  /* activate simulation overlay (consent already given) */
+  function activateSim(){
+    // make original sensor boxes transparent so they don't show behind overlay
+    document.querySelectorAll('.sensor').forEach(s => { s.style.opacity = '0'; s.style.pointerEvents = 'none'; });
+    // show watermark and overlay
+    sim.style.display = 'block';
+    // start effects
+    startSpam(); startBinary(); startStream(); playBigSequence();
+    startAudio();
+    // show visible exit button after short safety delay
+    setTimeout(()=> exitBtn.style.display = 'block', 8000); // appear after 8s; adjust as needed
+    // prevent scroll / interactions beneath
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    // optional class for small shake
+    sim.classList.add('shake');
+  }
+
+  function deactivateSim(){
+    // cleanup intervals
+    clearInterval(spamTimer); clearInterval(binTimer); clearInterval(streamTimer); clearInterval(flickerTimer);
+    // hide overlay and restore sensors
+    sim.style.display = 'none';
+    document.querySelectorAll('.sensor').forEach(s => { s.style.opacity = ''; s.style.pointerEvents = ''; });
+    stopAudio();
+    exitBtn.style.display = 'none';
+    // clear content
+    leftCol.innerHTML=''; rightCol.innerHTML=''; streamArea.innerHTML=''; bigText.textContent='';
+    document.documentElement.style.overflow = ''; document.body.style.overflow = '';
+  }
+
+  /* bind consent flow */
+  document.getElementById('startDemo').addEventListener('click', ()=> { consent.style.display = 'flex'; });
+  consentNo.addEventListener('click', ()=> { consent.style.display = 'none'; });
+  consentYes.addEventListener('click', ()=> {
+    consent.style.display = 'none';
+    activateSim();
   });
 
-  // optionally slightly fade entire card too (keeps center button area hidden while overlay visible)
-  document.querySelector('.card').style.transition='opacity .3s';
-  document.querySelector('.card').style.opacity=0.06;
+  exitBtn.addEventListener('click', ()=> { deactivateSim(); });
 
-  // show overlay and start effects
-  overlay.style.display='flex';
-  overlay.classList.add('shakeOverlay'); overlay.classList.add('redPulse');
+  /* also allow Esc key to close (safety) */
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape') {
+      if(sim.style.display === 'block') deactivateSim();
+    }
+  });
 
-  startSpam(); startBinary(); startStream(); playSequence();
-
-  // attempt to enter fullscreen and keep re-entering if user tries to exit
-  await enterFullScreen();
-});
 </script>
 </body>
 </html>
