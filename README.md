@@ -1,474 +1,447 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Telecomunicaciones Dashboard — Efecto Oscuro</title>
+<title>Telecomunicaciones — Efecto Oscuro Extremo</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
   :root{
-    --neon: #00ffae;
-    --bg: #070809;
-    --red: #ff0b0b;
+    --neon:#00ffae;
+    --bg:#040405;
+    --red:#ff073a;
   }
 
-  html,body{
-    height:100%;
-    margin:0;
-    font-family:'Orbitron', monospace;
-    background:var(--bg);
-    color:#cfeee6;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-
-  /* subtle animated grid behind */
+  html,body{height:100%;margin:0;font-family:'Orbitron',monospace;background:var(--bg);color:#cfeee6;overflow:hidden}
   body::before{
-    content:"";
-    position:fixed; inset:0; z-index:0;
+    content:"";position:fixed;inset:0;z-index:0;
     background:
       linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
       linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 60px 60px, 60px 60px;
-    opacity:0.15;
-    animation: gridmove 90s linear infinite;
+    background-size: 48px 48px,48px 48px;opacity:0.12;animation:gridmove 90s linear infinite;
   }
-  @keyframes gridmove { to { background-position:60px 60px,60px 60px; } }
+  @keyframes gridmove{to{background-position:48px 48px,48px 48px}}
 
+  /* dashboard card */
   .card{
-    position:relative;
-    z-index:2;
-    width:840px;
-    max-width:95vw;
-    padding:28px;
-    border-radius:14px;
-    background:linear-gradient(180deg, rgba(20,24,28,0.9), rgba(12,14,16,0.85));
-    border:1px solid rgba(0,255,174,0.12);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,255,174,0.02);
-    display:flex;
-    gap:24px;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
+    position:relative;z-index:2;width:900px;max-width:96vw;padding:26px;border-radius:12px;
+    background:linear-gradient(180deg, rgba(14,15,17,0.95), rgba(6,7,8,0.92));
+    border:1px solid rgba(0,255,174,0.08);box-shadow:0 10px 50px rgba(0,0,0,0.7);
+    display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:24px auto;
   }
 
   .sensor{
-    width:180px;
-    height:120px;
-    border-radius:12px;
-    background:linear-gradient(145deg,#0c1112,#0e1416);
-    border:1px solid rgba(0,255,174,0.08);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    color:var(--neon);
-    box-shadow: 0 6px 18px rgba(0,255,174,0.06);
-    transition: transform .15s;
+    width:180px;height:120px;border-radius:12px;background:linear-gradient(135deg,#071011,#0b1214);
+    border:1px solid rgba(0,255,174,0.06);display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:var(--neon);box-shadow:0 8px 20px rgba(0,255,174,0.03) inset,0 6px 18px rgba(0,0,0,0.6);
+    transition:transform .14s;
   }
-  .sensor:hover{ transform:translateY(-6px); }
+  .sensor:hover{transform:translateY(-6px)}
+  .sensor .label{font-size:13px;opacity:0.95}
+  .sensor .value{font-size:28px;margin-top:6px;font-weight:800}
 
-  .sensor .label{ font-size:14px; opacity:0.9; }
-  .sensor .value{ font-size:28px; margin-top:6px; font-weight:700; }
+  .center{flex:1;min-width:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .center h2{margin:0 0 12px;font-size:20px;color:var(--neon);letter-spacing:.6px}
+  .cta{background:linear-gradient(90deg,#ff7b7b,#ffcf33);color:#000;border:none;padding:12px 28px;border-radius:12px;font-weight:900;cursor:pointer;box-shadow:0 18px 40px rgba(255,0,60,0.06);transition:transform .18s}
+  .cta:hover{transform:translateY(-4px)}
 
-  .center{
-    flex:1;
-    min-width:240px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
+  .footer{position:fixed;left:0;bottom:12px;width:100%;text-align:center;color:#9aa6ad;font-size:12px;z-index:2}
+
+  /* -------------------- EXTREME SCARE OVERLAY -------------------- */
+  #scareOverlay{position:fixed;inset:0;display:none;z-index:9999;background:#000;align-items:center;justify-content:center;overflow:hidden}
+
+  /* left spam column (fast) */
+  .spamColumn{
+    position:absolute;left:0;top:0;height:100%;width:40%;z-index:6;pointer-events:none;
+    display:flex;align-items:flex-start;justify-content:flex-start;padding:40px 16px;box-sizing:border-box;
   }
-
-  .center h2{
-    margin:0 0 12px;
-    font-size:20px;
-    color:var(--neon);
-    letter-spacing:0.5px;
-    text-shadow: 0 0 8px rgba(0,255,174,0.15);
+  .spamStream{
+    width:100%;height:100%;overflow:hidden;display:flex;flex-direction:column;gap:6px;
+    align-items:flex-start;
+  }
+  .spamLine{
+    color:var(--red);font-weight:900;font-size:14px;text-transform:uppercase;
+    text-shadow:0 0 8px rgba(255,0,60,0.9),0 0 22px rgba(255,0,60,0.12);
+    opacity:0.95;white-space:nowrap;will-change:transform,opacity;
   }
 
-  .cta{
-    background:linear-gradient(90deg,#00ffae,#00ffaa);
-    color:#000;
-    border:none;
-    padding:12px 28px;
-    border-radius:12px;
-    font-weight:800;
-    cursor:pointer;
-    font-size:16px;
-    box-shadow: 0 8px 28px rgba(0,255,174,0.12);
-    transition: transform .18s, box-shadow .18s;
-  }
-  .cta:hover{ transform:translateY(-4px); box-shadow: 0 20px 40px rgba(0,255,174,0.18); }
-
-  .footer{
-    position:fixed; left:0; bottom:12px; width:100%; text-align:center; z-index:2;
-    color:#9aa6ad; font-size:12px;
+  /* wide binary rain on right (red) */
+  .binaryRain{
+    position:absolute;right:0;top:0;width:22%;height:100%;z-index:5;pointer-events:none;padding:24px;
+    display:flex;flex-direction:column;gap:4px;align-items:flex-end;justify-content:flex-start;color:#ff3a4a;font-weight:700;
+    font-size:12px;text-shadow:0 0 8px rgba(255,0,60,0.2)
   }
 
-  /* -------------- HACK EFFECT OVERLAY -------------- */
-  #scareOverlay{
-    position:fixed; inset:0; background:#000; z-index:9999; display:none;
-    align-items:center; justify-content:center; overflow:hidden;
-  }
+  /* skulls floating (lots) */
+  .skulls{position:absolute;inset:0;z-index:7;pointer-events:none}
+  .skull{position:absolute;font-size:98px;filter:drop-shadow(0 0 26px rgba(255,0,30,0.2));opacity:0.95;transform:translate(-50%,-50%)}
+  .skull-small{font-size:56px}
 
-  /* static tinted scanlines */
-  #scareOverlay::before{
-    content:""; position:absolute; inset:0;
-    background: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 3px);
-    mix-blend-mode:overlay; pointer-events:none;
-  }
-
-  /* red vignette */
-  #scareOverlay::after{
-    content:""; position:absolute; inset:0;
-    background: radial-gradient(ellipse at center, rgba(255,0,0,0.06) 0%, rgba(0,0,0,0.9) 60%);
-    pointer-events:none;
-  }
-
-  .scare-center{
-    position:relative; z-index:3; width:100%; height:100%; display:flex; align-items:center; justify-content:center;
-  }
-
-  /* skulls & glitch text container */
-  .skulls{
-    position:absolute; inset:0; z-index:4; pointer-events:none;
-  }
-  .skulls .skull{
-    position:absolute; font-size:80px; opacity:0.9; filter: drop-shadow(0 0 20px rgba(255,20,20,0.25));
-    transform:translate(-50%,-50%) rotate(-10deg);
-    animation: float 6s ease-in-out infinite;
-  }
-  @keyframes float{
-    0%{ transform:translate(-50%,-50%) translateY(-8px) rotate(-8deg);}
-    50%{ transform:translate(-50%,-50%) translateY(8px) rotate(8deg);}
-    100%{ transform:translate(-50%,-50%) translateY(-8px) rotate(-8deg);}
-  }
-
-  /* big blinking alert message */
+  /* giant red message */
   .bigmsg{
-    position:relative; z-index:5; color:var(--red); font-size:46px; font-weight:900; text-transform:uppercase;
-    text-shadow:
-      0 0 6px rgba(255,0,0,0.9),
-      0 0 22px rgba(255,0,0,0.5);
-    letter-spacing:2px;
-    animation: blink 1s steps(2) infinite;
-    pointer-events:none;
-  }
-  @keyframes blink{ 50%{ opacity:0.06; transform:translateX(6px) skewX(3deg); } }
-
-  /* glitch copies */
-  .bigmsg::before, .bigmsg::after{
-    content:attr(data-text);
-    position:absolute; left:0; top:0; width:100%;
-    clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
-    opacity:0.85;
-  }
-  .bigmsg::before{ color:#fff; transform:translate(-6px,-3px); mix-blend-mode:screen; opacity:0.08; }
-  .bigmsg::after{ color:var(--red); transform:translate(6px,3px); mix-blend-mode:overlay; opacity:0.06; }
-
-  /* moving red lines */
-  .scanline{
-    position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#ff0040,transparent);
-    top:30%; opacity:0.25; animation: scan 3s linear infinite;
-  }
-  @keyframes scan{ 0%{ transform:translateX(-120%);} 100%{ transform:translateX(120%);} }
-
-  /* typing stream smaller messages */
-  .stream{
-    position:absolute; bottom:8vh; left:4vw; right:4vw; color:#9fffbf; z-index:6; font-size:18px;
-    font-weight:700; text-align:left; pointer-events:none;
-    text-shadow: 0 0 10px rgba(0,255,160,0.06);
+    position:absolute;left:50%;top:18%;transform:translateX(-50%);z-index:8;color:var(--red);font-size:64px;font-weight:900;
+    text-shadow:0 0 18px rgba(255,0,60,0.95),0 0 48px rgba(255,0,60,0.35);letter-spacing:2px;pointer-events:none;
+    mix-blend-mode:screen;
   }
 
-  .red-flood{
-    position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,0,0,0.03), rgba(0,0,0,0));
-    mix-blend-mode:screen; z-index:2; pointer-events:none;
-  }
+  /* flicker bars and scanlines */
+  .scanFlash{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ff0033,transparent);z-index:9;opacity:0.3}
+  .bloodSplatter{position:absolute;inset:0;z-index:4;pointer-events:none;background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,0,0,0.08), transparent 5%),
+    radial-gradient(circle at 80% 90%, rgba(255,0,0,0.06), transparent 8%);mix-blend-mode:screen}
 
-  /* screen shake */
-  .shake{
-    animation: shakeAnim .6s cubic-bezier(.36,.07,.19,.97) infinite;
-  }
+  /* shaking */
+  .shakeOverlay{animation:shakeAnim .6s cubic-bezier(.36,.07,.19,.97) infinite}
   @keyframes shakeAnim{
-    0%{ transform:translate(0,0) }
-    10%{ transform:translate(-8px,6px) }
-    20%{ transform:translate(6px,-6px) }
-    30%{ transform:translate(-6px,6px) }
-    40%{ transform:translate(6px,-3px) }
-    50%{ transform:translate(-2px,2px) }
-    100%{ transform:translate(0,0) }
+    0%{transform:translate(0,0)}10%{transform:translate(-10px,8px)}20%{transform:translate(8px,-8px)}30%{transform:translate(-6px,6px)}40%{transform:translate(6px,-3px)}50%{transform:translate(-3px,2px)}100%{transform:translate(0,0)}
   }
 
-  /* small skull style customization */
-  .skull-svg{
-    width:120px; height:120px;
-    filter: drop-shadow(0 0 18px rgba(255,0,0,0.25));
-    opacity:0.95;
-  }
+  /* stream (bottom center) */
+  .stream{position:absolute;bottom:5vh;left:42%;right:2%;z-index:10;color:#ffb7b7;font-weight:800;pointer-events:none;font-size:16px;text-align:left}
 
-  /* ensure responsive */
-  @media (max-width:600px){
-    .bigmsg{ font-size:28px; }
-    .skulls .skull{ font-size:48px; }
-    .sensor{ width:140px; height:100px; }
+  /* strong red overlay flash */
+  .redPulse{animation:redPulse 350ms ease-in-out 3}
+  @keyframes redPulse{0%{background:rgba(255,0,0,0)}50%{background:rgba(255,0,0,0.12)}100%{background:rgba(255,0,0,0)}}
+
+  /* responsive tweaks */
+  @media (max-width:720px){
+    .card{width:95vw;padding:16px}
+    .bigmsg{font-size:32px;top:10%}
+    .spamColumn{width:42%}
+    .binaryRain{display:none}
+    .skull{font-size:56px}
   }
 
 </style>
 </head>
 <body>
-  <!-- Dashboard (keeps the original vibe) -->
+  <!-- Dashboard -->
   <div class="card" role="region" aria-label="Dashboard">
-    <div class="sensor" aria-hidden="true">
-      <div class="label">🌡️ Temp</div>
-      <div class="value" id="temp">-- °C</div>
-    </div>
-
-    <div class="sensor" aria-hidden="true">
-      <div class="label">💧 Humedad</div>
-      <div class="value" id="hum">-- %</div>
-    </div>
-
-    <div class="center">
-      <h2>Descubre Telecomunicaciones</h2>
-      <button class="cta" id="scareBtn">Información</button>
-    </div>
+    <div class="sensor" aria-hidden="true"><div class="label">🌡️ Temp</div><div class="value" id="temp">-- °C</div></div>
+    <div class="sensor" aria-hidden="true"><div class="label">💧 Humedad</div><div class="value" id="hum">-- %</div></div>
+    <div class="center"><h2>Descubre Telecomunicaciones</h2><button class="cta" id="scareBtn">Información</button></div>
   </div>
+  <div class="footer">ESP8266 Dashboard — Tema Neon (Simulación)</div>
 
-  <div class="footer">ESP8266 Dashboard — Tema Neon</div>
-
-  <!-- Fullscreen Scare Overlay -->
+  <!-- Overlay -->
   <div id="scareOverlay" aria-hidden="true">
-    <div class="red-flood"></div>
+    <div class="bloodSplatter"></div>
+
+    <div class="spamColumn" aria-hidden="true">
+      <div class="spamStream" id="spamStream"></div>
+    </div>
+
+    <div class="binaryRain" id="binaryRain"></div>
     <div class="skulls" id="skullsContainer"></div>
 
-    <div class="scare-center">
-      <div class="bigmsg" id="bigMsg" data-text=""> </div>
-      <div class="scanline" id="scan1" style="animation-delay:0s;"></div>
-      <div class="scanline" id="scan2" style="top:60%; animation-delay:.6s;"></div>
-      <div class="stream" id="streamText"></div>
-    </div>
+    <div class="bigmsg" id="bigMsg" data-text="">ESTÁS SIENDO HACKEADO</div>
+
+    <div class="scanFlash" style="top:25%"></div>
+    <div class="scanFlash" style="top:55%;animation-delay:.3s"></div>
+
+    <div class="stream" id="streamText"></div>
   </div>
 
 <script>
-/* ------------------ sensors (simulated) ------------------ */
+/* ----------------- Settings (modifica si quieres) ----------------- */
+const SPAWN_COUNT = 18;        // cantidad inicial de calaveras
+const STREAM_SPEED = 80;       // ms entre líneas en la columna izquierda (más pequeño = más spam)
+const STREAM_DURATION = 40000; // duración total del efecto en ms
+const BINARY_SPEED = 80;       // velocidad de lluvia binaria
+const DURATION_MS = 42000;     // cuánto dura todo (overlay se quita después) */
+
+/* ----------------- sensores simulados ----------------- */
 function fetchSensorData(){
-  document.getElementById('temp').textContent = (20 + Math.random()*7).toFixed(1) + ' °C';
-  document.getElementById('hum').textContent = (35 + Math.random()*20).toFixed(1) + ' %';
+  document.getElementById('temp').textContent = (18 + Math.random()*10).toFixed(1) + ' °C';
+  document.getElementById('hum').textContent = (30 + Math.random()*30).toFixed(1) + ' %';
 }
-setInterval(fetchSensorData, 2500);
+setInterval(fetchSensorData, 2400);
 fetchSensorData();
 
-/* ------------------ scary overlay logic ------------------ */
-const btn = document.getElementById('scareBtn');
-const overlay = document.getElementById('scareOverlay');
+/* ----------------- util ----------------- */
+function rInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+/* ----------------- skulls ----------------- */
 const skullsContainer = document.getElementById('skullsContainer');
-const bigMsg = document.getElementById('bigMsg');
-const streamText = document.getElementById('streamText');
-
-let audioCtx;
-
-/* utility: random int */
-function rInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-
-/* Build several floating skull elements (emoji + SVG fallback) */
-function spawnSkulls(count=8){
+function spawnSkulls(n=10){
   skullsContainer.innerHTML='';
-  for(let i=0;i<count;i++){
-    const el = document.createElement('div');
-    el.className='skull';
-    // choose emoji or small SVG skull for variety
-    if(Math.random() > 0.35){
-      el.textContent = '💀'; // emoji skull
-      el.style.fontSize = rInt(56,140) + 'px';
+  for(let i=0;i<n;i++){
+    const s = document.createElement('div');
+    s.className='skull';
+    s.style.left = rInt(5,95)+'%';
+    s.style.top = rInt(5,95)+'%';
+    s.style.fontSize = rInt(48,140)+'px';
+    s.style.transform = `translate(-50%,-50%) rotate(${rInt(-30,30)}deg)`;
+    // alternate skull char or svg
+    if(Math.random() > 0.4){
+      s.textContent = '💀';
     } else {
-      // small SVG skull (inline)
-      el.innerHTML = `<svg class="skull-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <g fill="#fff">
-          <path d="M32 2C18 2 6 12 6 24c0 6 3 11 8 14v6c0 4 4 8 8 8h8v-4h4v4h8c4 0 8-4 8-8v-6c5-3 8-8 8-14 0-12-12-22-26-22z" fill="#fff"/>
-          <circle cx="22" cy="26" r="4" fill="#000"/>
-          <circle cx="42" cy="26" r="4" fill="#000"/>
-          <path d="M22 42c3 2 10 2 14 0" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
-        </g></svg>`;
-      el.style.opacity = 0.95;
+      s.innerHTML = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><g fill="#fff"><path d="M32 2C18 2 6 12 6 24c0 6 3 11 8 14v6c0 4 4 8 8 8h8v-4h4v4h8c4 0 8-4 8-8v-6c5-3 8-8 8-14 0-12-12-22-26-22z"/></g></svg>';
+      s.style.opacity = 0.96;
     }
-    // random position
-    el.style.left = (Math.random()*100) + '%';
-    el.style.top = (Math.random()*100) + '%';
-    el.style.transform = `translate(-50%,-50%) rotate(${rInt(-25,25)}deg)`;
-    skullsContainer.appendChild(el);
+    skullsContainer.appendChild(s);
+    // float animation via JS random offsets
+    (function(el){
+      const dur = 4000 + Math.random()*4000;
+      setInterval(()=>{
+        el.style.transition = 'transform 3s ease-in-out';
+        el.style.transform = `translate(-50%,-50%) translateY(${rInt(-20,20)}px) rotate(${rInt(-30,30)}deg)`;
+      }, dur);
+    })(s);
   }
 }
 
-/* Create the streaming random "hacker" lines (customizable text list) */
-const streamPhrases = [
-  "ACCESO NO AUTORIZADO DETECTADO",
-  "SISTEMA COMPROMETIDO",
-  "INTRUSIÓN EN PROCESO",
-  "ENCRIPTANDO ARCHIVOS",
-  "RUTA DE RED INSEGURA",
-  "INTERRUPCIÓN DE SERVICIOS",
-  "ELIMINANDO BACKUPS",
-  "RESPUESTA: 0xDEAD"
+/* ----------------- spam left column (fast lines) ----------------- */
+const spamStream = document.getElementById('spamStream');
+const spamPhrases = [
+  "ACCESO NO AUTORIZADO +++",
+  "SISTEMA INTRUSO - IP: 192.168."+rInt(1,254)+"."+rInt(1,254),
+  "ENCRIPTANDO... [███▒▒▒▒▒▒▒]",
+  "ELIMINANDO BACKUPS...",
+  "NO HAY RESPUESTA",
+  "ERROR 0xDEAD",
+  "CONEXION ROTA",
+  "403 FORBIDDEN",
+  "RESPUESTA: BLOQ"
 ];
-
-function startStream(){
-  // rapidly add phrases to the stream area
-  streamText.innerHTML = '';
-  let idx=0;
-  const timer = setInterval(()=>{
-    const p = document.createElement('div');
-    p.textContent = streamPhrases[Math.floor(Math.random()*streamPhrases.length)];
-    p.style.opacity = 0; p.style.transform = 'translateY(8px)';
-    streamText.prepend(p);
-    // animate in
-    requestAnimationFrame(()=>{ p.style.transition='all .18s'; p.style.opacity=1; p.style.transform='translateY(0)'; });
-    // limit lines
-    if(streamText.children.length > 8) streamText.removeChild(streamText.lastChild);
-    idx++;
-    if(idx>40) clearInterval(timer);
-  }, 150);
+let spamTimer;
+function startSpam(){
+  spamStream.innerHTML='';
+  let count=0;
+  spamTimer = setInterval(()=>{
+    const line = document.createElement('div');
+    line.className='spamLine';
+    // make variety: some very long stings to overflow
+    const long = Math.random() > 0.6;
+    line.textContent = (long? '!!! ' : '') + pick(spamPhrases) + (long? ' ### TRACE ' + rInt(1000,99999) + ' *** ' : '');
+    spamStream.prepend(line);
+    // animate line: slide in from left
+    line.style.transform = 'translateX(-120%)';
+    line.style.opacity = '0';
+    requestAnimationFrame(()=>{ line.style.transition = 'transform 420ms cubic-bezier(.2,.9,.3,1), opacity .32s'; line.style.transform='translateX(0)'; line.style.opacity='1'; });
+    // limit
+    if(spamStream.children.length > 28) spamStream.removeChild(spamStream.lastChild);
+    count++;
+    // speed up occasionally
+    if(count % 40 === 0 && Math.random()>0.6){
+      clearInterval(spamTimer);
+      startSpamFastBurst();
+    }
+  }, STREAM_SPEED);
 }
 
-/* big pulsating messages sequence */
+function startSpamFastBurst(){
+  // very fast burst
+  let bursts = 0;
+  const b = setInterval(()=>{
+    const line = document.createElement('div');
+    line.className='spamLine';
+    line.textContent = '!!! INTRUSIÓN MASIVA @@@ IP:'+rInt(10,250)+'.'+rInt(1,250);
+    spamStream.prepend(line);
+    line.style.transform = 'translateX(-80%)';
+    requestAnimationFrame(()=>{ line.style.transition='transform .18s linear'; line.style.transform='translateX(0)'; });
+    if(spamStream.children.length > 40) spamStream.removeChild(spamStream.lastChild);
+    bursts++;
+    if(bursts>18){ clearInterval(b); startSpam(); }
+  }, 40);
+}
+
+/* ----------------- binary rain (right) ----------------- */
+const binaryRain = document.getElementById('binaryRain');
+let binaryTimer;
+function startBinary(){
+  binaryRain.innerHTML='';
+  binaryTimer = setInterval(()=>{
+    const n = document.createElement('div');
+    n.textContent = (Math.random()>0.5? '1010' : '0101') + (Math.random()>0.6? ' '+rInt(1000,9999):'');
+    n.style.opacity = 0; n.style.transform = 'translateY(-40px)';
+    binaryRain.prepend(n);
+    requestAnimationFrame(()=>{ n.style.transition = 'all .5s linear'; n.style.opacity = 1; n.style.transform = 'translateY(0)'; });
+    if(binaryRain.children.length > 50) binaryRain.removeChild(binaryRain.lastChild);
+  }, BINARY_SPEED);
+}
+
+/* ----------------- stream center bottom (dramatic) ----------------- */
+const streamText = document.getElementById('streamText');
+const streamPhrases = [
+  "ENCRIPTANDO SISTEMAS...",
+  "INTRUSIÓN: SERVIDOR CENTRAL",
+  "RESPUESTA: 0xFF00",
+  "ELIMINANDO TRAZAS",
+  "CONECTANDO RANSOM NET",
+  "CANTIDAD DE HOSTS: "+rInt(3,32)
+];
+let streamTimer;
+function startStream(){
+  streamText.innerHTML='';
+  let idx=0;
+  streamTimer = setInterval(()=>{
+    const p = document.createElement('div');
+    p.textContent = pick(streamPhrases);
+    p.style.opacity = 0; p.style.transform = 'translateY(12px)';
+    streamText.prepend(p);
+    requestAnimationFrame(()=>{ p.style.transition='all .22s'; p.style.opacity=1; p.style.transform='translateY(0)'; });
+    if(streamText.children.length>6) streamText.removeChild(streamText.lastChild);
+    idx++;
+    if(idx>60) clearInterval(streamTimer);
+  }, 180);
+}
+
+/* ----------------- big messages sequence & flicker ----------------- */
+const bigMsg = document.getElementById('bigMsg');
 const bigMessages = [
   "ESTÁS SIENDO HACKEADO",
-  "NO RESPONDE",
-  "SISTEMA FALLANDO",
-  "CONEXIÓN ROTA"
+  "NO HAY SALIDA",
+  "SISTEMA COLAPSANDO",
+  "TODO HA SIDO TOMADO"
 ];
 
 function playSequence(){
-  let i=0;
-  bigMsg.dataset.text = bigMessages[0];
   bigMsg.textContent = bigMessages[0];
-  bigMsg.classList.add('shake');
+  let i=1;
   const seq = setInterval(()=>{
+    bigMsg.textContent = bigMessages[i % bigMessages.length];
+    // quick jitter
+    bigMsg.style.transform = `translateX(-50%) translateY(${rInt(-4,6)}px) skewX(${rInt(-6,6)}deg)`;
     i++;
-    if(i < bigMessages.length){
-      bigMsg.dataset.text = bigMessages[i];
-      bigMsg.textContent = bigMessages[i];
-      // occasional heavy shake
-      if(i%2===0) bigMsg.classList.add('shake');
-      else bigMsg.classList.remove('shake');
-    } else {
-      clearInterval(seq);
-      // after messages, keep repeating with flicker
-      setInterval(()=>{
-        bigMsg.style.opacity = (Math.random()>0.5?1:0.06);
-        bigMsg.style.transform = `translateX(${rInt(-6,6)}px) skewX(${rInt(-3,3)}deg)`;
-      }, 220);
-    }
-  }, 1100);
+    if(i> (bigMessages.length*4)) clearInterval(seq);
+  }, 900);
 }
 
-/* SOUND: create creepy rumble + glitch beeps via WebAudio */
+/* ----------------- sound (aggressive, but controlled) ----------------- */
+let stopAudioFn = ()=>{};
 function startSound(){
   try{
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // low rumble
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine'; osc.frequency.value = 40 + Math.random()*30; // very low
-    gain.gain.value = 0.0015; // subtle
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    // base rumble
+    const base = ctx.createOscillator(); base.type='sine'; base.frequency.value = 40 + Math.random()*30;
+    const baseGain = ctx.createGain(); baseGain.gain.value = 0.004; // subtle but present
+    base.connect(baseGain); baseGain.connect(ctx.destination); base.start();
 
-    // slowly modulate the low freq for tension
-    const lfo = audioCtx.createOscillator();
-    const lfoGain = audioCtx.createGain();
-    lfo.frequency.value = 0.08;
-    lfoGain.gain.value = 20;
-    lfo.connect(lfoGain);
-    lfoGain.connect(osc.frequency);
-    lfo.start();
-
-    // glitch beeps cluster
-    function glitchBeep(){
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = 'square';
-      o.frequency.value = 600 + Math.random()*1200;
-      g.gain.value = 0.0015 + Math.random()*0.0025;
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start();
-      // short decay
-      g.gain.setValueAtTime(g.gain.value, audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.12 + Math.random()*0.25);
-      setTimeout(()=>{ o.stop(); o.disconnect(); g.disconnect(); }, 400);
+    // aggressive glitch stabs
+    const stabGain = ctx.createGain(); stabGain.gain.value = 0.0; stabGain.connect(ctx.destination);
+    function glitch(){
+      const o = ctx.createOscillator(); o.type='square'; o.frequency.value = 300 + Math.random()*1200;
+      const g = ctx.createGain(); g.gain.value = 0.0015 + Math.random()*0.003;
+      o.connect(g); g.connect(ctx.destination); o.start();
+      g.gain.setValueAtTime(g.gain.value, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.06 + Math.random()*0.18);
+      setTimeout(()=>{ o.stop(); try{o.disconnect();g.disconnect();}catch(e){} }, 300);
     }
-    // schedule random beeps
-    const beepInt = setInterval(()=>{ glitchBeep(); }, 250 + Math.random()*600);
+    // schedule many fast glitch clusters over time
+    const glitchInterval = setInterval(()=>{ if(Math.random()>0.3) glitch(); if(Math.random()>0.85) glitch(); }, 120);
 
-    // stop after some time to avoid infinite noise (you can remove limit if you want)
-    setTimeout(()=>{ clearInterval(beepInt); }, 25000);
+    // small static crackle noise using buffer
+    const bufferSize = 2 * ctx.sampleRate;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) { output[i] = (Math.random()*2-1) * 0.02; }
+    const noiseSource = ctx.createBufferSource(); noiseSource.buffer = noiseBuffer; noiseSource.loop = true;
+    const noiseGain = ctx.createGain(); noiseGain.gain.value = 0.0008;
+    noiseSource.connect(noiseGain); noiseGain.connect(ctx.destination); noiseSource.start();
 
-    // return function to stop base oscillators
-    return ()=>{ osc.stop(); lfo.stop(); try{ audioCtx.close(); }catch(e){} };
+    // stop function
+    stopAudioFn = ()=>{
+      try{ clearInterval(glitchInterval); base.stop(); noiseSource.stop(); ctx.close(); }catch(e){}
+    };
+    return stopAudioFn;
   }catch(e){
-    console.warn('Audio failed',e);
+    console.warn('Audio error',e);
     return ()=>{};
   }
 }
 
-/* FULLSCREEN mode request (improve immersion) */
+/* ----------------- fullscreen helper ----------------- */
 async function enterFullScreen(el){
-  try{
-    if(el.requestFullscreen) await el.requestFullscreen();
-    else if(el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
-    else if(el.msRequestFullscreen) await el.msRequestFullscreen();
-  }catch(e){ console.log('fullscreen blocked',e); }
+  try{ if(el.requestFullscreen) await el.requestFullscreen(); else if(el.webkitRequestFullscreen) await el.webkitRequestFullscreen(); }catch(e){/* ignore */}
 }
 
-/* main trigger */
-btn.addEventListener('click', async function(){
-  // hide dashboard visuals subtly
-  document.querySelector('.card').style.opacity = 0.06;
-  // spawn skulls and show overlay
-  spawnSkulls(12);
+/* ----------------- main trigger ----------------- */
+const btn = document.getElementById('scareBtn');
+const overlay = document.getElementById('scareOverlay');
+
+btn.addEventListener('click', async function onClick(){
+  // visual fade of dashboard
+  document.querySelector('.card').style.transition = 'opacity .25s'; document.querySelector('.card').style.opacity = 0.04;
+
+  // spawn assets
+  spawnSkulls(SPAWN_COUNT);
   overlay.style.display = 'flex';
-  overlay.classList.add('shake');
+  overlay.classList.add('shakeOverlay'); overlay.classList.add('redPulse');
 
-  // set initial big message
-  bigMsg.dataset.text = bigMessages[0];
-  bigMsg.textContent = bigMessages[0];
-
-  // start visuals
-  startStream();
+  // spam left & binary & stream
+  startSpam(); startBinary(); startStream();
   playSequence();
 
-  // try to go fullscreen
+  // bigmsg flicker timing
+  bigMsg.textContent = 'ESTÁS SIENDO HACKEADO';
+  setTimeout(()=>{ bigMsg.textContent = 'INTRUSIÓN MASIVA'; }, 1400);
+  setTimeout(()=>{ bigMsg.textContent = 'NO HAY SALIDA'; }, 2800);
+
+  // try fullscreen for immersion
   await enterFullScreen(document.documentElement);
 
-  // start sound (returns stopper)
-  const stopAudio = startSound();
+  // start audio
+  const stop = startSound();
 
-  // progressively increase terror: add random extra skulls, flashes
-  let pulses = 0;
+  // extra pulsing and spawn bursts while active
+  let elapsed = 0;
   const pulseInt = setInterval(()=>{
-    pulses++;
-    // flash background red for a beat
-    overlay.style.background = (pulses%2===0)?'radial-gradient(circle at 50% 40%, rgba(255,0,0,0.06), rgba(0,0,0,0.95))':'#000';
-    // add small new skull occasionally
-    if(Math.random()>0.6) spawnSkulls(8 + rInt(0,6));
-    if(pulses>40){
+    elapsed += 700;
+    // random extra spam bursts
+    if(Math.random()>0.5) startSpamFastBurst();
+    if(Math.random()>0.6) spawnSkulls(rInt(6,18));
+    // flash
+    overlay.classList.remove('redPulse'); void overlay.offsetWidth; overlay.classList.add('redPulse');
+    if(elapsed > DURATION_MS){
       clearInterval(pulseInt);
-      // restore dashboard after a while (clean up)
-      setTimeout(()=>{
-        overlay.style.display='none';
-        document.querySelector('.card').style.opacity = 1;
-        try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
-        stopAudio();
-      }, 24000); // overlay lasts ~24s total
+      cleanup();
     }
-  }, 600);
+  }, 700);
+
+  // final cleanup after DURATION_MS if not already
+  function cleanup(){
+    try{
+      overlay.style.display='none';
+      document.querySelector('.card').style.opacity = 1;
+      overlay.classList.remove('shakeOverlay');
+      spamStream.innerHTML=''; binaryRain.innerHTML=''; skullsContainer.innerHTML=''; streamText.innerHTML='';
+      try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+      stopAudioFn();
+    }catch(e){console.warn(e)}
+  }
+
+  // safety: ensure overlay removed after DURATION_MS even if not cleaned
+  setTimeout(cleanup, STREAM_DURATION + 20000);
 });
+
+/* ----------------- helper: startBinary function (separate) ----------------- */
+function startBinary(){
+  binaryRain.innerHTML='';
+  clearInterval(window._binaryTimer);
+  window._binaryTimer = setInterval(()=>{
+    const n = document.createElement('div');
+    n.textContent = (Math.random()>0.5? '101010' : '010101') + ' ' + rInt(100,9999);
+    n.style.opacity = 0; n.style.transform = 'translateY(-20px)'; n.style.marginBottom = '4px';
+    binaryRain.prepend(n);
+    requestAnimationFrame(()=>{ n.style.transition='all .6s linear'; n.style.opacity=1; n.style.transform='translateY(0)'; });
+    if(binaryRain.children.length>40) binaryRain.removeChild(binaryRain.lastChild);
+  }, BINARY_SPEED);
+}
+
+/* ----------------- helper: fast spam burst called earlier ----------------- */
+function startSpamFastBurst(){
+  let bursts=0;
+  const it = setInterval(()=>{
+    const line = document.createElement('div'); line.className='spamLine';
+    line.textContent = '!!! INTRUSIÓN MASIVA @@@ IP:' + rInt(1,254) + '.' + rInt(1,254);
+    spamStream.prepend(line);
+    line.style.transform='translateX(-80%)'; requestAnimationFrame(()=>{ line.style.transition='transform .16s linear'; line.style.transform='translateX(0)'; });
+    if(spamStream.children.length>50) spamStream.removeChild(spamStream.lastChild);
+    bursts++; if(bursts>26){ clearInterval(it); }
+  }, 36);
+}
 
 </script>
 </body>
