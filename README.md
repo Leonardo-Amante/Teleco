@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -62,10 +61,14 @@ body::before {
   color: #00ffae;
   font-size: 20px;
   text-align: center;
-  width: 160px;
+  width: 180px;      /* mismo ancho */
+  height: 120px;     /* mismo alto */
   margin: 10px;
   user-select: none;
   transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .sensor-box:hover {
