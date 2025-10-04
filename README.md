@@ -101,7 +101,6 @@
   .redPulse{animation:redPulse 350ms ease-in-out 3}
   @keyframes redPulse{0%{background:rgba(255,0,0,0)}50%{background:rgba(255,0,0,0.12)}100%{background:rgba(255,0,0,0)}}
 
-  /* responsive tweaks */
   @media (max-width:720px){
     .card{width:95vw;padding:16px}
     .bigmsg{font-size:32px;top:10%}
@@ -123,30 +122,17 @@
   <!-- Overlay -->
   <div id="scareOverlay" aria-hidden="true">
     <div class="bloodSplatter"></div>
-
     <div class="spamColumn" aria-hidden="true">
       <div class="spamStream" id="spamStream"></div>
     </div>
-
     <div class="binaryRain" id="binaryRain"></div>
-
     <div class="bigmsg" id="bigMsg" data-text="">ESTÁS SIENDO HACKEADO</div>
-
     <div class="scanFlash"></div>
     <div class="scanFlash"></div>
-
     <div class="stream" id="streamText"></div>
   </div>
 
 <script>
-/* ----------------- Settings ----------------- */
-const SPAWN_COUNT = 0;        // calaveras desactivadas
-const STREAM_SPEED = 80;
-const STREAM_DURATION = 40000;
-const BINARY_SPEED = 80;
-const DURATION_MS = 42000;
-
-/* ----------------- sensores simulados ----------------- */
 function fetchSensorData(){
   document.getElementById('temp').textContent = (18 + Math.random()*10).toFixed(1) + ' °C';
   document.getElementById('hum').textContent = (30 + Math.random()*30).toFixed(1) + ' %';
@@ -154,15 +140,11 @@ function fetchSensorData(){
 setInterval(fetchSensorData, 2400);
 fetchSensorData();
 
-/* ----------------- util ----------------- */
-function rInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
-function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
-
-/* ----------------- spam left column (fast lines) ----------------- */
+/* ----------------- spam left column ----------------- */
 const spamStream = document.getElementById('spamStream');
 const spamPhrases = [
   "ACCESO NO AUTORIZADO +++",
-  "SISTEMA INTRUSO - IP: 192.168."+rInt(1,254)+"."+rInt(1,254),
+  "SISTEMA INTRUSO - IP: 192.168."+Math.floor(Math.random()*255)+"."+Math.floor(Math.random()*255),
   "ENCRIPTANDO... [███▒▒▒▒▒▒▒]",
   "ELIMINANDO BACKUPS...",
   "NO HAY RESPUESTA",
@@ -171,59 +153,37 @@ const spamPhrases = [
   "403 FORBIDDEN",
   "RESPUESTA: BLOQ"
 ];
-let spamTimer;
 function startSpam(){
   spamStream.innerHTML='';
   let count=0;
-  spamTimer = setInterval(()=>{
+  const spamTimer = setInterval(()=>{
     const line = document.createElement('div');
     line.className='spamLine';
-    const long = Math.random() > 0.6;
-    line.textContent = (long? '!!! ' : '') + pick(spamPhrases) + (long? ' ### TRACE ' + rInt(1000,99999) + ' *** ' : '');
+    line.textContent = spamPhrases[Math.floor(Math.random()*spamPhrases.length)];
     spamStream.prepend(line);
-    line.style.transform = 'translateX(-120%)';
-    line.style.opacity = '0';
-    requestAnimationFrame(()=>{ line.style.transition = 'transform 420ms cubic-bezier(.2,.9,.3,1), opacity .32s'; line.style.transform='translateX(0)'; line.style.opacity='1'; });
-    if(spamStream.children.length > 28) spamStream.removeChild(spamStream.lastChild);
+    if(spamStream.children.length>28) spamStream.removeChild(spamStream.lastChild);
     count++;
-    if(count % 40 === 0 && Math.random()>0.6){
-      clearInterval(spamTimer);
-      startSpamFastBurst();
-    }
-  }, STREAM_SPEED);
+    if(count>200) clearInterval(spamTimer);
+  },50);
 }
+startSpam();
 
-function startSpamFastBurst(){
-  let bursts = 0;
-  const b = setInterval(()=>{
-    const line = document.createElement('div');
-    line.className='spamLine';
-    line.textContent = '!!! INTRUSIÓN MASIVA @@@ IP:'+rInt(10,250)+'.'+rInt(1,250);
-    spamStream.prepend(line);
-    line.style.transform = 'translateX(-80%)';
-    requestAnimationFrame(()=>{ line.style.transition='transform .18s linear'; line.style.transform='translateX(0)'; });
-    if(spamStream.children.length > 40) spamStream.removeChild(spamStream.lastChild);
-    bursts++;
-    if(bursts>18){ clearInterval(b); startSpam(); }
-  }, 40);
-}
-
-/* ----------------- binary rain (right) ----------------- */
+/* ----------------- binary rain ----------------- */
 const binaryRain = document.getElementById('binaryRain');
-let binaryTimer;
 function startBinary(){
   binaryRain.innerHTML='';
-  binaryTimer = setInterval(()=>{
+  setInterval(()=>{
     const n = document.createElement('div');
-    n.textContent = (Math.random()>0.5? '1010' : '0101') + (Math.random()>0.6? ' '+rInt(1000,9999):'');
-    n.style.opacity = 0; n.style.transform = 'translateY(-40px)';
+    n.textContent = (Math.random()>0.5? '1010' : '0101') + " "+Math.floor(Math.random()*9999);
+    n.style.opacity=0;n.style.transform='translateY(-40px)';
     binaryRain.prepend(n);
-    requestAnimationFrame(()=>{ n.style.transition = 'all .5s linear'; n.style.opacity = 1; n.style.transform = 'translateY(0)'; });
-    if(binaryRain.children.length > 50) binaryRain.removeChild(binaryRain.lastChild);
-  }, BINARY_SPEED);
+    requestAnimationFrame(()=>{ n.style.transition='all .5s linear'; n.style.opacity=1; n.style.transform='translateY(0)'; });
+    if(binaryRain.children.length>50) binaryRain.removeChild(binaryRain.lastChild);
+  },80);
 }
+startBinary();
 
-/* ----------------- stream center bottom (dramatic) ----------------- */
+/* ----------------- stream bottom center ----------------- */
 const streamText = document.getElementById('streamText');
 const streamPhrases = [
   "ENCRIPTANDO SISTEMAS...",
@@ -231,25 +191,20 @@ const streamPhrases = [
   "RESPUESTA: 0xFF00",
   "ELIMINANDO TRAZAS",
   "CONECTANDO RANSOM NET",
-  "CANTIDAD DE HOSTS: "+rInt(3,32)
+  "CANTIDAD DE HOSTS: "+Math.floor(Math.random()*30+3)
 ];
-let streamTimer;
 function startStream(){
   streamText.innerHTML='';
-  let idx=0;
-  streamTimer = setInterval(()=>{
+  setInterval(()=>{
     const p = document.createElement('div');
-    p.textContent = pick(streamPhrases);
-    p.style.opacity = 0; p.style.transform = 'translateY(12px)';
+    p.textContent = streamPhrases[Math.floor(Math.random()*streamPhrases.length)];
     streamText.prepend(p);
-    requestAnimationFrame(()=>{ p.style.transition='all .22s'; p.style.opacity=1; p.style.transform='translateY(0)'; });
     if(streamText.children.length>6) streamText.removeChild(streamText.lastChild);
-    idx++;
-    if(idx>60) clearInterval(streamTimer);
-  }, 180);
+  },180);
 }
+startStream();
 
-/* ----------------- big messages sequence & flicker ----------------- */
+/* ----------------- big messages ----------------- */
 const bigMsg = document.getElementById('bigMsg');
 const bigMessages = [
   "ESTÁS SIENDO HACKEADO",
@@ -257,33 +212,42 @@ const bigMessages = [
   "SISTEMA COLAPSANDO",
   "TODO HA SIDO TOMADO"
 ];
-
 function playSequence(){
-  bigMsg.textContent = bigMessages[0];
-  let i=1;
-  const seq = setInterval(()=>{
+  let i=0;
+  setInterval(()=>{
     bigMsg.textContent = bigMessages[i % bigMessages.length];
-    bigMsg.style.transform = `translateX(-50%) translateY(${rInt(-4,6)}px) skewX(${rInt(-6,6)}deg)`;
+    bigMsg.style.transform = `translateX(-50%) translateY(${Math.floor(Math.random()*12-6)}px) skewX(${Math.floor(Math.random()*12-6)}deg)`;
     i++;
-    if(i> (bigMessages.length*4)) clearInterval(seq);
-  }, 900);
+  },900);
 }
 
-/* ----------------- trigger ----------------- */
+/* ----------------- full screen forzado ----------------- */
 const btn = document.getElementById('scareBtn');
 const overlay = document.getElementById('scareOverlay');
+
+async function enterFullScreen() {
+    try {
+        if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                setTimeout(()=>{document.documentElement.requestFullscreen();}, 50);
+            }
+        });
+        document.addEventListener('keydown', (e)=>{
+            if(e.key==='Escape'||e.key==='F11'){ e.preventDefault(); document.documentElement.requestFullscreen(); }
+        });
+    } catch(e){}
+}
+
 btn.addEventListener('click', async function(){
-  document.querySelector('.card').style.transition = 'opacity .25s'; document.querySelector('.card').style.opacity = 0.04;
+    document.querySelector('.card').style.transition='opacity .25s';
+    document.querySelector('.card').style.opacity=0.04;
 
-  overlay.style.display = 'flex';
-  overlay.classList.add('shakeOverlay'); overlay.classList.add('redPulse');
+    overlay.style.display='flex';
+    overlay.classList.add('shakeOverlay'); overlay.classList.add('redPulse');
 
-  startSpam(); startBinary(); startStream();
-  playSequence();
-
-  // fullscreen
-  try{ if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); }catch(e){}
-
+    startSpam(); startBinary(); startStream(); playSequence();
+    enterFullScreen();
 });
 </script>
 </body>
