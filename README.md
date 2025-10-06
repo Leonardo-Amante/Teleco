@@ -1,146 +1,211 @@
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Radio Web 24/7</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f4f4f9;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: #333;
-    }
-    .container {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      width: 90%;
-      max-width: 600px;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #e74c3c;
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-    }
-    .station-btn {
-      background: #3498db;
-      border: none;
-      color: #fff;
-      font-size: 1.2rem;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .station-btn:hover {
-      background: #2980b9;
-    }
-    .controls {
-      margin-top: 20px;
-    }
-    .controls button {
-      background: #2ecc71;
-      border: none;
-      color: #fff;
-      font-size: 1.2rem;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .controls button:hover {
-      background: #27ae60;
-    }
-    .status {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      color: #95a5a6;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Telecomunicaciones Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+html, body {
+  margin: 0; padding: 0;
+  height: 100%;
+  font-family: 'Orbitron', monospace;
+  background: #0a0f14;
+  color: #c9d1d9;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    linear-gradient(90deg, rgba(0,255,174,0.05) 1px, transparent 1px),
+    linear-gradient(rgba(0,255,174,0.05) 1px, transparent 1px),
+    radial-gradient(circle at 25% 75%, rgba(0,255,174,0.1), transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(0,255,174,0.1), transparent 50%);
+  background-size: 60px 60px, 60px 60px, 200px 200px, 200px 200px;
+  animation: moveLines 60s linear infinite;
+  z-index: 0;
+}
+
+@keyframes moveLines {
+  0% {background-position: 0 0, 0 0, 0 0, 0 0;}
+  100% {background-position: 60px 60px, 60px 60px, 0 0, 0 0;}
+}
+
+.card {
+  position: relative;
+  background: #161b22;
+  border: 1px solid #00ffae;
+  border-radius: 15px;
+  padding: 30px 40px;
+  box-shadow: 0 0 20px #00ffae50, 0 0 40px #00ffae30;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 850px;
+  max-width: 95vw;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.sensor-box {
+  background: linear-gradient(145deg, #0f161f, #101921);
+  border: 1px solid #00ffae;
+  border-radius: 12px;
+  padding: 18px 25px;
+  box-shadow: 0 0 12px #00ffae50, 0 0 25px #00ffae30 inset;
+  color: #00ffae;
+  font-size: 20px;
+  text-align: center;
+  width: 180px;      /* mismo ancho */
+  height: 120px;     /* mismo alto */
+  margin: 10px;
+  user-select: none;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sensor-box:hover {
+  transform: scale(1.05);
+}
+
+.message-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 10px;
+}
+
+.message-box h2 {
+  margin-bottom: 20px;
+  color: #00ffae;
+  font-size: 22px;
+  text-shadow: 0 0 5px #00ffae, 0 0 10px #00ffae, 0 0 20px #00ffae;
+}
+
+.message-box button {
+  padding: 14px 32px;
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #00ffae, #00ffaa);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 15px #00ffae50;
+  transition: all 0.3s;
+}
+
+.message-box button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 30px #00ffaa70, 0 0 40px #00ffaa50 inset;
+}
+
+.footer {
+  margin-top: 25px;
+  font-size: 13px;
+  color: #8b949e;
+  text-align: center;
+  position: absolute;
+  bottom: 15px;
+  width: 100%;
+  left: 0;
+  z-index: 1;
+  user-select: none;
+}
+
+.electronic-dot {
+  width: 10px;
+  height: 10px;
+  background: #00ffae;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00ffae, 0 0 15px #00ffae80;
+  position: absolute;
+  animation: pulse 3s infinite alternate;
+}
+
+.electronic-dot:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+.electronic-dot:nth-child(2) { top: 30%; right: 8%; animation-delay: 1.5s; }
+.electronic-dot:nth-child(3) { bottom: 15%; left: 12%; animation-delay: 0.8s; }
+.electronic-dot:nth-child(4) { bottom: 25%; right: 15%; animation-delay: 2.3s; }
+
+@keyframes pulse {
+  from { box-shadow: 0 0 8px #00ffae, 0 0 15px #00ffae80; }
+  to { box-shadow: 0 0 15px #00ffae, 0 0 30px #00ffaecc; }
+}
+
+/* Video fullscreen */
+#videoContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: none;
+}
+
+#videoContainer iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Radio Web 24/7</h1>
-    <p>Escucha las mejores emisoras chilenas de reggaetón, cumbia y ranchera en vivo.</p>
-    <div>
-      <button class="station-btn" onclick="playStation('https://stream.radioparadise.com/mp3-128')">Radio FM Latina Chile</button>
-      <button class="station-btn" onclick="playStation('https://streaming.radios.com/cumbias-chilenas.mp3')">Radio Cumbia Chile</button>
-      <button class="station-btn" onclick="playStation('https://streaming.radios.com/ranchera-chilena.mp3')">Estación Ranchera Chile</button>
-    </div>
-    <div class="controls">
-      <button id="playBtn">Escuchar</button>
-      <button id="pauseBtn" disabled>Pausar</button>
-      <button id="stopBtn" disabled>Detener</button>
-    </div>
-    <div class="status" id="status">Estado: Inactivo</div>
+
+<div class="electronic-dot"></div>
+<div class="electronic-dot"></div>
+<div class="electronic-dot"></div>
+<div class="electronic-dot"></div>
+
+<div class="card">
+  <div class="sensor-box">
+    🌡️ Temp:<br><span id="temp">--</span> °C
+  </div>
+  <div class="sensor-box">
+    💧 Humedad:<br><span id="hum">--</span> %
   </div>
 
-  <script>
-    let audio = null;
-    let isPlaying = false;
+  <div class="message-box">
+    <h2>Descubre Telecomunicaciones</h2>
+    <button onclick="playVideo()">Información</button>
+  </div>
+</div>
 
-    function playStation(url) {
-      if (audio) {
-        audio.pause();
-        audio.src = '';
-      }
-      audio = new Audio(url);
-      audio.play();
-      audio.onplay = () => {
-        isPlaying = true;
-        document.getElementById('status').innerText = 'Estado: Reproduciendo';
-        document.getElementById('playBtn').disabled = true;
-        document.getElementById('pauseBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = false;
-      };
-      audio.onpause = () => {
-        isPlaying = false;
-        document.getElementById('status').innerText = 'Estado: Pausado';
-        document.getElementById('playBtn').disabled = false;
-        document.getElementById('pauseBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-      };
-      audio.onended = () => {
-        isPlaying = false;
-        document.getElementById('status').innerText = 'Estado: Detenido';
-        document.getElementById('playBtn').disabled = false;
-        document.getElementById('pauseBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = true;
-      };
-    }
+<div class="footer">ESP8266 Dashboard — Tema Neon</div>
 
-    document.getElementById('playBtn').addEventListener('click', () => {
-      if (audio) {
-        audio.play();
-      }
-    });
+<div id="videoContainer"></div>
 
-    document.getElementById('pauseBtn').addEventListener('click', () => {
-      if (audio) {
-        audio.pause();
-      }
-    });
+<script>
+  // Actualiza sensores
+  function fetchSensorData(){
+    document.getElementById('temp').textContent = (20 + Math.random()*5).toFixed(1);
+    document.getElementById('hum').textContent = (40 + Math.random()*10).toFixed(1);
+  }
+  setInterval(fetchSensorData, 3000);
+  fetchSensorData();
 
-    document.getElementById('stopBtn').addEventListener('click', () => {
-      if (audio) {
-        audio.pause();
-        audio.src = '';
-        document.getElementById('status').innerText = 'Estado: Detenido';
-        document.getElementById('playBtn').disabled = false;
-        document.getElementById('pauseBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = true;
-      }
-    });
-  </script>
+  // Video fullscreen sin controles
+  function playVideo() {
+    const container = document.getElementById('videoContainer');
+    container.style.display = 'block';
+    container.innerHTML = `
+      <iframe 
+        src="https://www.youtube.com/embed/Ae2uKbFbt1U?autoplay=1&controls=0&modestbranding=1&rel=0&fs=1&disablekb=1" 
+        allow="autoplay; fullscreen; encrypted-media" allowfullscreen>
+      </iframe>
+    `;
+  }
+</script>
+
 </body>
 </html>
