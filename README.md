@@ -4,17 +4,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌌 Mi Web Interactiva</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@400;700&display=swap');
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Roboto', sans-serif;
     }
 
     body {
-      background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
+      background: linear-gradient(135deg, #1b1b2f, #162447, #1f4068);
       color: white;
       min-height: 100vh;
       display: flex;
@@ -25,19 +25,18 @@
     header {
       text-align: center;
       padding: 25px;
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       background: rgba(255, 255, 255, 0.05);
       box-shadow: 0 2px 20px rgba(0,0,0,0.6);
-      text-shadow: 0 0 10px #00ffe7, 0 0 20px #ff00ff;
+      text-shadow: 0 0 8px #6a00f4, 0 0 14px #00eaff;
     }
 
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       text-align: center;
       padding: 40px;
@@ -46,19 +45,19 @@
     }
 
     h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      background: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff);
+      font-size: 2.8rem;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #ff6ec7, #00eaff, #a46bff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: glow 2s infinite alternate;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
     }
 
     p {
       font-size: 1.2rem;
-      margin-bottom: 50px;
-      color: #dfe6e9;
-      max-width: 650px;
+      margin-bottom: 40px;
+      color: #e0e0e0;
+      max-width: 700px;
     }
 
     .options {
@@ -66,35 +65,78 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 25px;
       width: 100%;
-      max-width: 950px;
+      max-width: 1000px;
+      margin-bottom: 50px;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 35px;
-      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 15px;
       text-align: center;
       cursor: pointer;
       transition: transform 0.3s, box-shadow 0.3s;
-      box-shadow: 0 0 15px rgba(0,255,200,0.2);
-      border: 1px solid rgba(0,255,200,0.3);
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .card:hover {
-      transform: translateY(-10px) scale(1.05);
-      box-shadow: 0 0 25px #00ffe7, 0 0 50px #ff00ff;
+      transform: translateY(-8px) scale(1.04);
+      box-shadow: 0 0 20px #6a00f4, 0 0 35px #00eaff;
     }
 
     .card h2 {
-      font-size: 1.6rem;
-      margin-bottom: 12px;
-      color: #00ffe7;
-      text-shadow: 0 0 10px #00ffe7;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #00eaff;
     }
 
     .card p {
-      font-size: 1rem;
-      color: #ccc;
+      font-size: 0.95rem;
+      color: #d1d1d1;
+    }
+
+    /* Galería */
+    .gallery {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      transition: transform 0.3s;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Radio */
+    .radio-section {
+      margin-top: 60px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      max-width: 700px;
+      width: 90%;
+    }
+
+    .radio-section h2 {
+      margin-bottom: 15px;
+      color: #ff6ec7;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
     }
 
     footer {
@@ -102,20 +144,10 @@
       padding: 18px;
       font-size: 0.95rem;
       background: rgba(255, 255, 255, 0.05);
-      text-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffe7;
+      text-shadow: 0 0 5px #6a00f4, 0 0 10px #00eaff;
     }
 
-    /* Animaciones */
-    @keyframes glow {
-      from {
-        text-shadow: 0 0 10px #00ffe7, 0 0 20px #ff00ff;
-      }
-      to {
-        text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffe7;
-      }
-    }
-
-    /* Fondo partículas */
+    /* Partículas */
     .particles {
       position: absolute;
       top: 0;
@@ -131,10 +163,10 @@
       display: block;
       width: 4px;
       height: 4px;
-      background: #00ffe7;
+      background: #fff;
       border-radius: 50%;
-      animation: float 10s linear infinite;
-      opacity: 0.7;
+      animation: float 12s linear infinite;
+      opacity: 0.5;
     }
 
     @keyframes float {
@@ -153,50 +185,61 @@
   </style>
 </head>
 <body>
-  <header>🌐 Mi Web Neón Interactiva</header>
+  <header>🌐 Mi Web Interactiva</header>
 
   <!-- Partículas -->
   <div class="particles">
     <span style="left:10%; animation-delay:0s;"></span>
-    <span style="left:20%; animation-delay:2s;"></span>
+    <span style="left:25%; animation-delay:2s;"></span>
     <span style="left:40%; animation-delay:4s;"></span>
     <span style="left:60%; animation-delay:6s;"></span>
-    <span style="left:80%; animation-delay:8s;"></span>
+    <span style="left:75%; animation-delay:8s;"></span>
     <span style="left:90%; animation-delay:10s;"></span>
   </div>
 
   <main>
-    <h1>Bienvenido al Futuro 🚀</h1>
-    <p>Explora un mundo lleno de música, noticias, videos y más. Haz clic en cualquiera de las secciones y disfruta de la experiencia neón.</p>
+    <h1>Bienvenido 🚀</h1>
+    <p>Explora música, imágenes y más en este espacio digital con estilo futurista y vibrante.</p>
 
     <div class="options">
       <div class="card" onclick="window.location.href='https://www.youtube.com/'">
         <h2>🎬 Videos</h2>
-        <p>Explora el universo audiovisual más vibrante.</p>
+        <p>Descubre el mundo audiovisual.</p>
       </div>
 
       <div class="card" onclick="window.location.href='https://www.spotify.com/'">
         <h2>🎵 Música</h2>
-        <p>Ritmos que iluminan tu día y tu noche.</p>
+        <p>Ritmos que acompañan tu día.</p>
       </div>
 
       <div class="card" onclick="window.location.href='https://news.google.com/'">
         <h2>📰 Noticias</h2>
-        <p>Siempre actualizado con lo último del mundo.</p>
+        <p>Lo último en información global.</p>
       </div>
 
       <div class="card" onclick="window.location.href='https://github.com/'">
         <h2>💻 Proyectos</h2>
-        <p>Innovación, código y creatividad en un solo lugar.</p>
+        <p>Código e innovación.</p>
       </div>
+    </div>
 
-      <div class="card" onclick="window.location.href='https://www.instagram.com/'">
-        <h2>📸 Galería</h2>
-        <p>Imágenes que brillan como luces de neón.</p>
-      </div>
+    <!-- Galería -->
+    <div class="gallery">
+      <img src="https://picsum.photos/400/300?random=1" alt="Imagen 1">
+      <img src="https://picsum.photos/400/300?random=2" alt="Imagen 2">
+      <img src="https://picsum.photos/400/300?random=3" alt="Imagen 3">
+    </div>
+
+    <!-- Radio -->
+    <div class="radio-section">
+      <h2>📻 Escucha Radio Estrella del Sur</h2>
+      <audio controls autoplay>
+        <source src="https://stream.zeno.fm/yqf1z4uh9mzuv" type="audio/mpeg">
+        Tu navegador no soporta audio en vivo.
+      </audio>
     </div>
   </main>
 
-  <footer>© 2025 - Página futurista creada con ⚡ neón vibes</footer>
+  <footer>© 2025 - Página futurista con música y estilo</footer>
 </body>
 </html>
