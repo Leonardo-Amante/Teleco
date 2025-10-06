@@ -1,211 +1,145 @@
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Telecomunicaciones Dashboard</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Web Interactiva</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-html, body {
-  margin: 0; padding: 0;
-  height: 100%;
-  font-family: 'Orbitron', monospace;
-  background: #0a0f14;
-  color: #c9d1d9;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
 
-body::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    linear-gradient(90deg, rgba(0,255,174,0.05) 1px, transparent 1px),
-    linear-gradient(rgba(0,255,174,0.05) 1px, transparent 1px),
-    radial-gradient(circle at 25% 75%, rgba(0,255,174,0.1), transparent 50%),
-    radial-gradient(circle at 75% 25%, rgba(0,255,174,0.1), transparent 50%);
-  background-size: 60px 60px, 60px 60px, 200px 200px, 200px 200px;
-  animation: moveLines 60s linear infinite;
-  z-index: 0;
-}
+    body {
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-@keyframes moveLines {
-  0% {background-position: 0 0, 0 0, 0 0, 0 0;}
-  100% {background-position: 60px 60px, 60px 60px, 0 0, 0 0;}
-}
+    header {
+      text-align: center;
+      padding: 20px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
 
-.card {
-  position: relative;
-  background: #161b22;
-  border: 1px solid #00ffae;
-  border-radius: 15px;
-  padding: 30px 40px;
-  box-shadow: 0 0 20px #00ffae50, 0 0 40px #00ffae30;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 850px;
-  max-width: 95vw;
-  z-index: 1;
-  flex-wrap: wrap;
-}
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px;
+    }
 
-.sensor-box {
-  background: linear-gradient(145deg, #0f161f, #101921);
-  border: 1px solid #00ffae;
-  border-radius: 12px;
-  padding: 18px 25px;
-  box-shadow: 0 0 12px #00ffae50, 0 0 25px #00ffae30 inset;
-  color: #00ffae;
-  font-size: 20px;
-  text-align: center;
-  width: 180px;      /* mismo ancho */
-  height: 120px;     /* mismo alto */
-  margin: 10px;
-  user-select: none;
-  transition: transform 0.2s;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #00ffae, #00b3ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeIn 2s ease;
+    }
 
-.sensor-box:hover {
-  transform: scale(1.05);
-}
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      color: #dfe6e9;
+      max-width: 600px;
+      animation: fadeIn 3s ease;
+    }
 
-.message-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin: 10px;
-}
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
 
-.message-box h2 {
-  margin-bottom: 20px;
-  color: #00ffae;
-  font-size: 22px;
-  text-shadow: 0 0 5px #00ffae, 0 0 10px #00ffae, 0 0 20px #00ffae;
-}
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
 
-.message-box button {
-  padding: 14px 32px;
-  font-size: 18px;
-  font-weight: bold;
-  background: linear-gradient(45deg, #00ffae, #00ffaa);
-  color: #000;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 0 0 15px #00ffae50;
-  transition: all 0.3s;
-}
+    .card:hover {
+      transform: translateY(-8px) scale(1.05);
+      background: rgba(0, 255, 174, 0.2);
+    }
 
-.message-box button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 30px #00ffaa70, 0 0 40px #00ffaa50 inset;
-}
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #00ffae;
+    }
 
-.footer {
-  margin-top: 25px;
-  font-size: 13px;
-  color: #8b949e;
-  text-align: center;
-  position: absolute;
-  bottom: 15px;
-  width: 100%;
-  left: 0;
-  z-index: 1;
-  user-select: none;
-}
+    .card p {
+      font-size: 1rem;
+      color: #ccc;
+    }
 
-.electronic-dot {
-  width: 10px;
-  height: 10px;
-  background: #00ffae;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #00ffae, 0 0 15px #00ffae80;
-  position: absolute;
-  animation: pulse 3s infinite alternate;
-}
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.05);
+    }
 
-.electronic-dot:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
-.electronic-dot:nth-child(2) { top: 30%; right: 8%; animation-delay: 1.5s; }
-.electronic-dot:nth-child(3) { bottom: 15%; left: 12%; animation-delay: 0.8s; }
-.electronic-dot:nth-child(4) { bottom: 25%; right: 15%; animation-delay: 2.3s; }
-
-@keyframes pulse {
-  from { box-shadow: 0 0 8px #00ffae, 0 0 15px #00ffae80; }
-  to { box-shadow: 0 0 15px #00ffae, 0 0 30px #00ffaecc; }
-}
-
-/* Video fullscreen */
-#videoContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
-  display: none;
-}
-
-#videoContainer iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-</style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
+  <header>🌐 Mi Web Interactiva</header>
 
-<div class="electronic-dot"></div>
-<div class="electronic-dot"></div>
-<div class="electronic-dot"></div>
-<div class="electronic-dot"></div>
+  <main>
+    <h1>Bienvenido</h1>
+    <p>Explora las distintas secciones y descubre todo lo que tenemos para ti.</p>
 
-<div class="card">
-  <div class="sensor-box">
-    🌡️ Temp:<br><span id="temp">--</span> °C
-  </div>
-  <div class="sensor-box">
-    💧 Humedad:<br><span id="hum">--</span> %
-  </div>
+    <div class="options">
+      <div class="card" onclick="window.location.href='https://www.youtube.com/'">
+        <h2>🎬 Videos</h2>
+        <p>Mira contenido audiovisual interesante.</p>
+      </div>
 
-  <div class="message-box">
-    <h2>Descubre Telecomunicaciones</h2>
-    <button onclick="playVideo()">Información</button>
-  </div>
-</div>
+      <div class="card" onclick="window.location.href='https://www.spotify.com/'">
+        <h2>🎵 Música</h2>
+        <p>Escucha playlists y estaciones de radio.</p>
+      </div>
 
-<div class="footer">ESP8266 Dashboard — Tema Neon</div>
+      <div class="card" onclick="window.location.href='https://news.google.com/'">
+        <h2>📰 Noticias</h2>
+        <p>Mantente informado con las últimas novedades.</p>
+      </div>
 
-<div id="videoContainer"></div>
+      <div class="card" onclick="window.location.href='https://github.com/'">
+        <h2>💻 Proyectos</h2>
+        <p>Descubre mis trabajos y proyectos en GitHub.</p>
+      </div>
 
-<script>
-  // Actualiza sensores
-  function fetchSensorData(){
-    document.getElementById('temp').textContent = (20 + Math.random()*5).toFixed(1);
-    document.getElementById('hum').textContent = (40 + Math.random()*10).toFixed(1);
-  }
-  setInterval(fetchSensorData, 3000);
-  fetchSensorData();
+      <div class="card" onclick="window.location.href='https://www.instagram.com/'">
+        <h2>📸 Galería</h2>
+        <p>Explora imágenes y momentos especiales.</p>
+      </div>
+    </div>
+  </main>
 
-  // Video fullscreen sin controles
-  function playVideo() {
-    const container = document.getElementById('videoContainer');
-    container.style.display = 'block';
-    container.innerHTML = `
-      <iframe 
-        src="https://www.youtube.com/embed/Ae2uKbFbt1U?autoplay=1&controls=0&modestbranding=1&rel=0&fs=1&disablekb=1" 
-        allow="autoplay; fullscreen; encrypted-media" allowfullscreen>
-      </iframe>
-    `;
-  }
-</script>
-
+  <footer>© 2025 - Creado con estilo ✨</footer>
 </body>
 </html>
