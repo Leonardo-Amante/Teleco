@@ -2,213 +2,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌟 Radio Estrella LS</title>
+  <title>Página Telecomunicaciones</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@400;700&display=swap');
-
-    * {
+    /* Fondo animado */
+    body {
       margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      background: linear-gradient(270deg, #0f0f0f, #1c1c1c, #141414);
+      background-size: 600% 600%;
+      animation: fondo 15s ease infinite;
+      overflow-x: hidden;
     }
 
-    body {
-      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    @keyframes fondo {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     header {
-      padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 2px 20px rgba(0,0,0,0.5);
-    }
-
-    header h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.8rem;
-      color: #00eaff;
-      text-shadow: 0 0 10px #00eaff, 0 0 20px #ff6ec7;
-    }
-
-    nav a {
-      margin-left: 20px;
-      text-decoration: none;
-      color: #fff;
+      text-align: center;
+      padding: 20px;
+      font-size: 2.5rem;
       font-weight: bold;
-      transition: color 0.3s;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #009999;
     }
 
-    nav a:hover {
-      color: #00eaff;
-    }
-
-    .hero {
+    nav {
       text-align: center;
-      padding: 80px 20px;
-      background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.9)),
-                  url("https://images.unsplash.com/photo-1526470608268-f674ce90ebd4?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
-      color: white;
+      margin: 20px 0;
     }
 
-    .hero h2 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      background: linear-gradient(90deg, #ff6ec7, #00eaff, #a46bff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero p {
-      font-size: 1.2rem;
-      max-width: 600px;
-      margin: auto;
-      color: #ddd;
-    }
-
-    main {
-      flex: 1;
-      padding: 40px 20px;
-      text-align: center;
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 25px;
-      margin: 50px auto;
-      max-width: 1000px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 30px;
-      border-radius: 15px;
-      transition: transform 0.3s, box-shadow 0.3s;
+    nav button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #111;
+      color: #0ff;
+      font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      box-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+      transition: transform 0.2s;
     }
 
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 20px #6a00f4, 0 0 35px #00eaff;
+    nav button:hover {
+      transform: scale(1.1);
+      background: #0ff;
+      color: #000;
     }
 
-    .card h3 {
-      margin-bottom: 10px;
-      color: #00eaff;
-    }
-
-    .gallery {
-      margin: 60px auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
-    }
-
-    .gallery img {
-      width: 100%;
+    section {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: rgba(20, 20, 20, 0.8);
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      box-shadow: 0 0 20px rgba(0,255,255,0.3);
+      text-align: center;
+    }
+
+    section h2 {
+      color: #ff00ff;
+      text-shadow: 0 0 8px #ff00ff;
+    }
+
+    section p {
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+
+    /* Imagenes */
+    .imagenes {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .imagenes img {
+      width: 180px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #0ff;
       transition: transform 0.3s;
     }
 
-    .gallery img:hover {
-      transform: scale(1.05);
+    .imagenes img:hover {
+      transform: scale(1.1);
     }
 
-    .radio-section {
-      margin: 60px auto;
-      padding: 30px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 15px;
-      max-width: 700px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-
-    .radio-section h2 {
-      margin-bottom: 15px;
-      color: #ff6ec7;
-    }
-
-    audio {
-      width: 100%;
-      margin-top: 10px;
+    /* Radio */
+    .radio {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #0ff;
     }
 
     footer {
       text-align: center;
-      padding: 18px;
-      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
       font-size: 0.9rem;
-      text-shadow: 0 0 5px #6a00f4, 0 0 10px #00eaff;
+      color: #888;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>🌟 Radio Estrella LS</h1>
-    <nav>
-      <a href="#opciones">Opciones</a>
-      <a href="#galeria">Galería</a>
-      <a href="#radio">Radio</a>
-    </nav>
+    🌐 Telecomunicaciones del Futuro
   </header>
 
-  <section class="hero">
-    <h2>La radio que ilumina tu día</h2>
-    <p>Sintoniza lo mejor de la música popular, cumbias, rancheras y mucho más. Bienvenido a Radio Estrella LS.</p>
+  <nav>
+    <button onclick="mostrar('quees')">¿Qué es?</button>
+    <button onclick="mostrar('importancia')">Importancia</button>
+    <button onclick="mostrar('aplicaciones')">Aplicaciones</button>
+    <button onclick="mostrar('radio')">Escuchar Radio</button>
+  </nav>
+
+  <section id="quees">
+    <h2>¿Qué son las Telecomunicaciones?</h2>
+    <p>
+      Las telecomunicaciones permiten la transmisión de información a distancia 
+      mediante diversos medios como ondas de radio, cables, satélites y redes digitales.
+    </p>
+    <div class="imagenes">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Satellite_dish_1.png/600px-Satellite_dish_1.png" alt="Antena">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Satellite_icon.svg/800px-Satellite_icon.svg.png" alt="Satélite">
+    </div>
   </section>
 
-  <main>
-    <!-- Opciones -->
-    <div id="opciones" class="options">
-      <div class="card">
-        <h3>🎵 Música</h3>
-        <p>Explora los mejores ritmos de Chile y Latinoamérica.</p>
-      </div>
-      <div class="card">
-        <h3>📰 Noticias</h3>
-        <p>Información local y nacional actualizada.</p>
-      </div>
-      <div class="card">
-        <h3>🎉 Eventos</h3>
-        <p>Conciertos, festivales y transmisiones especiales.</p>
-      </div>
-      <div class="card">
-        <h3>📸 Galería</h3>
-        <p>Revive los mejores momentos en imágenes.</p>
-      </div>
+  <section id="importancia" style="display:none;">
+    <h2>Importancia</h2>
+    <p>
+      Gracias a las telecomunicaciones estamos conectados en todo momento. 
+      Desde llamadas telefónicas hasta Internet, son clave en la sociedad moderna.
+    </p>
+    <div class="imagenes">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Internet_map_1024.jpg/640px-Internet_map_1024.jpg" alt="Redes">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Internet_map_1024_-_transparent.png/600px-Internet_map_1024_-_transparent.png" alt="Mapa">
     </div>
+  </section>
 
-    <!-- Galería -->
-    <div id="galeria" class="gallery">
-      <img src="https://picsum.photos/500/300?random=10" alt="Imagen 1">
-      <img src="https://picsum.photos/500/300?random=20" alt="Imagen 2">
-      <img src="https://picsum.photos/500/300?random=30" alt="Imagen 3">
-      <img src="https://picsum.photos/500/300?random=40" alt="Imagen 4">
+  <section id="aplicaciones" style="display:none;">
+    <h2>Aplicaciones</h2>
+    <p>
+      Se aplican en telefonía móvil, televisión, radiodifusión, Internet, redes sociales,
+      telemedicina, educación en línea y mucho más.
+    </p>
+    <div class="imagenes">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Cell_tower_from_below.JPG/640px-Cell_tower_from_below.JPG" alt="Torre celular">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Fiber_optic_cable_1.jpg/640px-Fiber_optic_cable_1.jpg" alt="Fibra óptica">
     </div>
+  </section>
 
-    <!-- Radio -->
-    <div id="radio" class="radio-section">
-      <h2>📻 Escucha en vivo Radio Estrella LS</h2>
-      <audio controls autoplay>
-        <source src="https://radioestrellals.cl:8443/live" type="audio/mpeg">
-        Tu navegador no soporta la radio en vivo.
-      </audio>
-    </div>
-  </main>
+  <section id="radio" class="radio" style="display:none;">
+    <h2>🎶 Radio Estrella en Vivo</h2>
+    <audio controls autoplay>
+      <source src="https://stream.zeno.fm/2vbhcrv82hhvv" type="audio/mpeg">
+      Tu navegador no soporta audio en vivo.
+    </audio>
+  </section>
 
   <footer>
-    © 2025 Radio Estrella LS - Todos los derechos reservados
+    © 2025 - Proyecto de Telecomunicaciones
   </footer>
+
+  <script>
+    function mostrar(id) {
+      document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
+      document.getElementById(id).style.display = "block";
+    }
+  </script>
 </body>
 </html>
