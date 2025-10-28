@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
@@ -46,26 +47,23 @@ button:hover{box-shadow:0 0 15px var(--accent)}
 #ipv6{color:#88dfff}
 .warning{color:#bbb;font-size:0.85rem;margin-top:6px}
 footer{text-align:right;padding:10px 30px;color:rgba(255,255,255,0.3);font-size:0.9rem}
-.sep{height:1px;background:rgba(255,255,255,0.1);margin:16px 0}
 .small{font-size:.85rem;color:var(--muted)}
 </style>
 </head>
 <body>
 
-<!-- CALCULADORA IPV4 -->
+<!-- CALCULADORA IPV4 (auto por clase) -->
 <div class="panel">
   <h1>Calculadora IPv4</h1>
-  <label>Dirección IP o CIDR</label>
-  <input id="ipInput" placeholder="Ej: 192.168.1.0/24 o 8.8.8.8">
-  <div class="small">Tip: si no pones prefijo, se aplica la <b>máscara por clase</b> (A=/8, B=/16, C=/24).</div>
-  <label>Prefijo (opcional)</label>
-  <input id="prefixInput" type="number" min="0" max="32" placeholder="(auto por clase)">
+  <label>Dirección IP</label>
+  <input id="ipInput" placeholder="Ej: 10.10.10.10 ó 192.168.1.1">
+  <div class="small">No necesitas prefijo: se detecta la <b>máscara real por clase</b> (A=/8, B=/16, C=/24) al apretar “Calcular”.</div>
   <button id="calcBtn">Calcular</button>
   <div id="error" class="warning"></div>
 
   <div id="results" class="result" style="display:none">
     <div class="result-line" style="--i:0">🌍 <b>Clase:</b> <span id="classOut" class="value">—</span></div>
-    <div class="result-line" style="--i:1">🧮 <b>Máscara:</b> <span id="maskOut" class="value">—</span></div>
+    <div class="result-line" style="--i:1">🧮 <b>Máscara (auto):</b> <span id="maskOut" class="value">—</span> <span id="maskNote" class="small"></span></div>
     <div class="result-line" style="--i:2">💻 <b>Red:</b> <span id="netOut" class="value">—</span></div>
     <div class="result-line" style="--i:3">📡 <b>Broadcast:</b> <span id="broadOut" class="value">—</span></div>
     <div class="result-line" style="--i:4">🔢 <b>Hosts:</b> <span id="hostsOut" class="value">—</span></div>
@@ -102,19 +100,21 @@ function prefixToMask(p){return intToIp(p===0?0:(~0<<(32-p))>>>0)}
 function detectClass(ip){
   const o=parseInt(ip.split('.')[0],10);
   if(o>=1&&o<=126) return 'A';
+  if(o===127) return 'Loopback (127/8)';
   if(o>=128&&o<=191) return 'B';
   if(o>=192&&o<=223) return 'C';
   if(o>=224&&o<=239) return 'D (Multicast)';
   if(o>=240&&o<=254) return 'E (Experimental)';
+  if(o===0) return 'Reservada (0/8)';
   return 'Desconocida';
 }
-/* Prefijo “clásico” por clase (A=8, B=16, C=24). Para D/E o desconocida, fallback 24. */
-function defaultPrefixForIP(ip){
+/* Máscara “verdadera” por clase A/B/C. Para otras, no existe hostmask clásica. */
+function classDefaultPrefix(ip){
   const o=parseInt(ip.split('.')[0],10);
-  if(o>=1&&o<=126) return 8;
-  if(o>=128&&o<=191) return 16;
-  if(o>=192&&o<=223) return 24;
-  return 24; // fallback razonable
+  if(o>=1&&o<=126) return 8;       // A
+  if(o>=128&&o<=191) return 16;    // B
+  if(o>=192&&o<=223) return 24;    // C
+  return null; // D/E/Loopback/Reservada → sin máscara host “real”
 }
 
 function calc(ip,p){
@@ -150,12 +150,12 @@ function wildcard(mask){
 
 /* ---------- DOM ---------- */
 const ipIn=document.getElementById('ipInput');
-const pIn=document.getElementById('prefixInput');
 const err=document.getElementById('error');
 const resBox=document.getElementById('results');
 const OUT={
   clase:document.getElementById('classOut'),
   mask:document.getElementById('maskOut'),
+  maskNote:document.getElementById('maskNote'),
   net:document.getElementById('netOut'),
   broad:document.getElementById('broadOut'),
   hosts:document.getElementById('hostsOut'),
@@ -164,60 +164,57 @@ const OUT={
   ipv6:document.getElementById('ipv6')
 };
 
-/* Autocompletar prefijo por clase al tipear (si el usuario no fijó nada) */
-ipIn.addEventListener('input', ()=>{
-  const raw=ipIn.value.trim();
-  if(!raw) return;
-  // Si viene con /CIDR, no tocamos el prefijo del input
-  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(raw)){
-    const c=defaultPrefixForIP(raw);
-    if(pIn.value==="" || Number(pIn.value)<0 || Number(pIn.value)>32){
-      pIn.value=c;
-    }
-  }
-});
-
 document.getElementById('calcBtn').onclick=()=>{
-  resBox.classList.remove('show'); // reset animación
+  resBox.classList.remove('show'); // reset anim
   const raw=ipIn.value.trim();
-  let ip=raw, pref=(pIn.value!==""?parseInt(pIn.value,10):undefined);
   if(!raw){
-    err.textContent="Ingresa una IP o IP/CIDR.";
+    err.textContent="Ingresa una IP.";
     resBox.style.display="none"; return;
   }
   err.textContent="";
-  // Soportar notación CIDR en el mismo campo
-  if(raw.includes('/')){
-    const [a,b]=raw.split('/');
-    ip=a; pref=parseInt(b,10);
-  }
-  if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)){
-    err.textContent="Formato inválido. Usa x.x.x.x o x.x.x.x/yy";
+  if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(raw)){
+    err.textContent="Formato inválido. Usa x.x.x.x";
     resBox.style.display="none"; return;
   }
-  // Si no hay prefijo válido, usar el de la clase
-  if(!Number.isInteger(pref) || pref<0 || pref>32){
-    pref = defaultPrefixForIP(ip);
-    pIn.value = pref; // reflejarlo en el input
-  }
 
-  const octs=ip.split('.').map(Number);
+  const octs=raw.split('.').map(Number);
   if(octs.some(n=>n>255)){
-    err.textContent="⚠ IP fuera de rango real (octetos >255). Se calculará igualmente para tu práctica.";
+    err.textContent="⚠ IP fuera de rango real (octetos >255). Se mostrará cálculo solo a modo de práctica.";
   }
 
-  const r=calc(ip,pref);
-  OUT.clase.textContent=detectClass(ip);
-  OUT.mask.textContent=r.mask;
-  OUT.net.textContent=r.network;
-  OUT.broad.textContent=r.broadcast;
-  OUT.hosts.textContent=r.hosts;
-  OUT.first.textContent=r.first;
-  OUT.last.textContent=r.last;
-  OUT.ipv6.textContent=ipv4to6_real_2025(ip);
+  // Detectar clase y prefijo verdadero por clase (A/B/C). Otros → sin máscara real.
+  const clase=detectClass(raw);
+  const pref=classDefaultPrefix(raw);
+
+  OUT.clase.textContent=clase;
+  OUT.maskNote.textContent="";
+
+  if(pref===null){
+    // No hay máscara host “real” (D/E/loopback/reservada). Usar /24 como práctica y avisar.
+    const fallback=24;
+    const r=calc(raw, fallback);
+    OUT.mask.textContent=r.mask;
+    OUT.maskNote.textContent=" (no existe máscara host clásica para esta IP; usando /24 para práctica)";
+    OUT.net.textContent=r.network;
+    OUT.broad.textContent=r.broadcast;
+    OUT.hosts.textContent=r.hosts;
+    OUT.first.textContent=r.first;
+    OUT.last.textContent=r.last;
+  }else{
+    // Clase A/B/C → máscara verdadera
+    const r=calc(raw, pref);
+    OUT.mask.textContent=r.mask;
+    OUT.net.textContent=r.network;
+    OUT.broad.textContent=r.broadcast;
+    OUT.hosts.textContent=r.hosts;
+    OUT.first.textContent=r.first;
+    OUT.last.textContent=r.last;
+  }
+
+  OUT.ipv6.textContent=ipv4to6_real_2025(raw);
 
   resBox.style.display="block";
-  void resBox.offsetWidth; // reflow para reiniciar animación
+  void resBox.offsetWidth; // reflow
   resBox.classList.add('show');
 };
 
@@ -233,7 +230,7 @@ document.getElementById('wildBtn').onclick=()=>{
 
 document.getElementById('copyAll').onclick=()=>{
   const text=`IPv4: ${ipIn.value}
-Prefijo usado: ${pIn.value || '(auto por clase)'}
+Clase: ${OUT.clase.textContent}
 Máscara: ${OUT.mask.textContent}
 Red: ${OUT.net.textContent}
 Broadcast: ${OUT.broad.textContent}
