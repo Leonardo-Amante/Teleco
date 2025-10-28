@@ -7,8 +7,8 @@
 :root{
   --accent:#00ffc3;
   --accent2:#00aaff;
-  --bg1:#02101a;
-  --bg2:#042534;
+  --bg1:#00131d;
+  --bg2:#002933;
   --text:#e8f6ff;
   --muted:#9fb0c6;
 }
@@ -20,7 +20,7 @@ body{
   min-height:100vh;
   background:radial-gradient(circle at 25% 25%,var(--bg1) 0%,var(--bg2) 100%);
   background-size:200% 200%;
-  animation:moveBg 20s ease-in-out infinite;
+  animation:moveBg 25s ease-in-out infinite;
   overflow-y:auto;
   scroll-behavior:smooth;
 }
@@ -29,7 +29,7 @@ body{
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
-h1{margin:0 0 10px;font-size:1.6rem;color:var(--accent)}
+h1{margin:0 0 10px;font-size:1.6rem;color:var(--accent);text-shadow:0 0 15px var(--accent2)}
 .panel{
   margin:30px auto;
   max-width:1000px;
@@ -62,8 +62,12 @@ button{
   transition:0.3s;
 }
 button:hover{box-shadow:0 0 15px var(--accent)}
-.result{background:rgba(255,255,255,0.07);
-  border-radius:10px;padding:10px;margin-top:10px}
+.result{
+  background:rgba(255,255,255,0.07);
+  border-radius:10px;
+  padding:10px;
+  margin-top:10px;
+}
 .value{font-weight:700;font-size:1.05rem;color:#adfff3}
 #ipv6{color:#88dfff}
 .warning{color:#bbb;font-size:0.8rem}
@@ -94,7 +98,7 @@ footer{
     <div>🔢 <b>Hosts:</b> <span id="hostsOut">—</span></div>
     <div>➡️ <b>Primera IP:</b> <span id="firstOut">—</span></div>
     <div>⬅️ <b>Última IP:</b> <span id="lastOut">—</span></div>
-    <div>🌐 <b>IPv6 equivalente:</b> <span id="ipv6">—</span></div>
+    <div>🌐 <b>IPv6 real:</b> <span id="ipv6">—</span></div>
   </div>
 
   <button id="copyAll" style="margin-top:10px">Copiar Todo</button>
@@ -125,9 +129,12 @@ function ipToInt(ip){const p=ip.split('.').map(Number);
 function intToIp(i){return[(i>>>24)&255,(i>>>16)&255,(i>>>8)&255,i&255].join('.');}
 function prefixToMask(p){return intToIp(p===0?0:(~0<<(32-p))>>>0);}
 function detectClass(ip){
-  const o=parseInt(ip.split('.')[0]);if(o>=1&&o<=126)return"A";if(o>=128&&o<=191)return"B";if(o>=192&&o<=223)return"C";return"Desconocida";}
+  const o=parseInt(ip.split('.')[0]);
+  if(o>=1&&o<=126)return"A";if(o>=128&&o<=191)return"B";
+  if(o>=192&&o<=223)return"C";return"Desconocida";}
 function calc(ip,p){
-  const ipi=ipToInt(ip);const maskInt=p===0?0:((~0<<(32-p))>>>0);
+  const ipi=ipToInt(ip);
+  const maskInt=p===0?0:((~0<<(32-p))>>>0);
   const net=(p===0?0:(ipi&maskInt))>>>0;
   const broad=(p===0?0xFFFFFFFF:(net|(~maskInt>>>0)))>>>0;
   const hosts=p>=31?(p===31?2:1):(2**(32-p))-2;
@@ -138,21 +145,27 @@ function calc(ip,p){
 }
 function wildcard(mask){
   const p=mask.split('.').map(n=>255-Number(n));return p.join('.');}
-function ipv4to6(ip){return"::ffff:"+ip;}
+function ipv4to6real(ip){
+  const parts=ip.split('.').map(Number);
+  if(parts.length!==4)return"—";
+  const hex1=((parts[0]<<8)|parts[1]).toString(16);
+  const hex2=((parts[2]<<8)|parts[3]).toString(16);
+  return"2001:db8::"+hex1+":"+hex2;
+}
 
-const ipIn=document.getElementById('ipInput');
-const prefixIn=document.getElementById('prefixInput');
-const err=document.getElementById('error');
-const res=document.getElementById('results');
+let lastHosts=0;
 
 document.getElementById('calcBtn').onclick=()=>{
-  const val=ipIn.value.trim();if(!val){err.textContent="Ingresa una IP.";return;}
+  const val=document.getElementById('ipInput').value.trim();
+  const pref=document.getElementById('prefixInput').value?parseInt(document.getElementById('prefixInput').value):24;
+  const err=document.getElementById('error');
+  const res=document.getElementById('results');
+  if(!val){err.textContent="Ingresa una IP.";return;}
   err.textContent="";
-  let ip=val,pref=prefixIn.value?parseInt(prefixIn.value):undefined;
-  if(val.includes('/')){const [a,b]=val.split('/');ip=a;pref=parseInt(b);}
-  if(isNaN(pref))pref=24;
+  let ip=val;
+  if(val.includes('/')){const [a,b]=val.split('/');ip=a;}
   if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)){
-    err.textContent="Formato de IP inválido.";return;
+    err.textContent="Formato inválido.";return;
   }
   const parts=ip.split('.').map(Number);
   if(parts.some(n=>n>999)){err.textContent="⚠ IP fuera de rango real, pero calculada igualmente.";}
@@ -165,26 +178,33 @@ document.getElementById('calcBtn').onclick=()=>{
   document.getElementById('hostsOut').textContent=r.hosts;
   document.getElementById('firstOut').textContent=r.first;
   document.getElementById('lastOut').textContent=r.last;
-  document.getElementById('ipv6').textContent=ipv4to6(ip);
+  document.getElementById('ipv6').textContent=ipv4to6real(ip);
+  lastHosts=r.hosts;
 };
+
 document.getElementById('evalBtn').onclick=()=>{
-  const expr=document.getElementById('formula').value;
-  const hostsTxt=document.getElementById('hostsOut').textContent;
-  const hosts=Number(hostsTxt)||0;
+  const expr=document.getElementById('formula').value.trim();
+  const out=document.getElementById('vlsmOut');
+  if(!expr){out.textContent="—";return;}
+  if(!lastHosts){out.textContent="Primero calcula una red.";return;}
   try{
-    const result=Function('hosts',`return ${expr}`)(hosts);
-    document.getElementById('vlsmOut').textContent=result;
-  }catch{document.getElementById('vlsmOut').textContent="Error";}
+    const result=Function('hosts',`return ${expr}`)(lastHosts);
+    out.textContent=result;
+  }catch{out.textContent="Error en la expresión";}
 };
+
 document.getElementById('wildBtn').onclick=()=>{
   const m=document.getElementById('maskInput').value.trim();
-  if(!m)return;
-  if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(m)){document.getElementById('wildOut').textContent="Máscara inválida";return;}
+  if(!m){document.getElementById('wildOut').textContent="—";return;}
+  if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(m)){
+    document.getElementById('wildOut').textContent="Máscara inválida";return;
+  }
   document.getElementById('wildOut').textContent=wildcard(m);
 };
+
 document.getElementById('copyAll').onclick=()=>{
-  const text=`IPv4: ${ipIn.value}
-IPv6: ${document.getElementById('ipv6').textContent}
+  const text=`IPv4: ${document.getElementById('ipInput').value}
+IPv6 real: ${document.getElementById('ipv6').textContent}
 Red: ${document.getElementById('netOut').textContent}
 Broadcast: ${document.getElementById('broadOut').textContent}
 Hosts: ${document.getElementById('hostsOut').textContent}
