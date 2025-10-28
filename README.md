@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
@@ -16,20 +15,32 @@ body{
   font-family:Inter,Segoe UI,Arial,sans-serif;
   min-height:100vh;
   background:radial-gradient(circle at 25% 25%,var(--bg1) 0%,var(--bg2) 100%);
-  background-size:200% 200%; animation:moveBg 25s ease-in-out infinite;
+  background-size:200% 200%;
+  animation:moveBg 25s ease-in-out infinite;
   overflow-y:auto; scroll-behavior:smooth;
 }
-@keyframes moveBg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-h1{margin:0 0 10px;font-size:1.6rem;color:var(--accent);text-shadow:0 0 15px var(--accent2)}
+@keyframes moveBg{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+h1{
+  margin:0 0 10px; font-size:1.6rem;
+  color:var(--accent); text-shadow:0 0 15px var(--accent2)
+}
 .panel{
-  margin:30px auto; max-width:1000px; background:rgba(0,0,0,0.35);
-  border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:20px;
-  backdrop-filter:blur(10px); box-shadow:0 0 25px rgba(0,255,200,0.15);
+  margin:30px auto; max-width:1000px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px; padding:20px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 25px rgba(0,255,200,0.15);
 }
 label{font-size:0.9rem;color:var(--muted)}
 input{
   width:100%; padding:10px; margin-top:5px; margin-bottom:10px;
-  border:none; border-radius:8px; background:rgba(255,255,255,0.07);
+  border:none; border-radius:8px;
+  background:rgba(255,255,255,0.07);
   color:var(--text); font-size:1rem;
 }
 input:focus{outline:2px solid var(--accent)}
@@ -39,10 +50,25 @@ button{
   padding:10px 16px;cursor:pointer;transition:0.3s;
 }
 button:hover{box-shadow:0 0 15px var(--accent)}
-.result{background:rgba(255,255,255,0.07);border-radius:10px;padding:10px;margin-top:10px;overflow:hidden}
+.result{
+  background:rgba(255,255,255,0.07);
+  border-radius:10px; padding:10px; margin-top:10px;
+  overflow:hidden;
+}
+/* animación por líneas */
 .result-line{opacity:0;transform:translateY(6px)}
-.result.show .result-line{animation:popIn 420ms cubic-bezier(.2,.7,.2,1) forwards;animation-delay: calc(var(--i,0) * 90ms)}
-@keyframes popIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.result.show .result-line{
+  animation:popIn 420ms cubic-bezier(.2,.7,.2,1) forwards;
+  animation-delay: calc(var(--i,0) * 90ms);
+}
+@keyframes popIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+/* animación específica para wildcard cuando solo se revela esa fila */
+.result-line.reveal{
+  animation:popIn 420ms cubic-bezier(.2,.7,.2,1) forwards;
+}
 .value{font-weight:700;font-size:1.05rem;color:#adfff3}
 #ipv6{color:#88dfff}
 .warning{color:#bbb;font-size:0.85rem;margin-top:6px}
@@ -56,7 +82,7 @@ footer{text-align:right;padding:10px 30px;color:rgba(255,255,255,0.3);font-size:
 <div class="panel">
   <h1>Calculadora IPv4</h1>
   <label>Dirección IP</label>
-  <input id="ipInput" placeholder="Ej: 10.10.10.10 ó 192.168.1.1">
+  <input id="ipInput" placeholder="Ej: 10.10.10.10 o 192.168.1.1">
   <div class="small">No necesitas prefijo: se detecta la <b>máscara real por clase</b> (A=/8, B=/16, C=/24) al apretar “Calcular”.</div>
   <button id="calcBtn">Calcular</button>
   <div id="error" class="warning"></div>
@@ -81,7 +107,7 @@ footer{text-align:right;padding:10px 30px;color:rgba(255,255,255,0.3);font-size:
   <label>Máscara de Red</label>
   <input id="maskInput" placeholder="Ej: 255.255.255.0">
   <button id="wildBtn">Calcular Wildcard</button>
-  <div class="result">
+  <div class="result" id="wildResultBox">
     <div class="result-line" id="wildRow" style="--i:0"><b>Wildcard:</b> <span id="wildOut" class="value">—</span></div>
   </div>
 </div>
@@ -108,7 +134,7 @@ function detectClass(ip){
   if(o===0) return 'Reservada (0/8)';
   return 'Desconocida';
 }
-/* Máscara “verdadera” por clase A/B/C. Para otras, no existe hostmask clásica. */
+/* Máscara “verdadera” por clase A/B/C. Para otras, no hay hostmask clásica. */
 function classDefaultPrefix(ip){
   const o=parseInt(ip.split('.')[0],10);
   if(o>=1&&o<=126) return 8;       // A
@@ -116,7 +142,6 @@ function classDefaultPrefix(ip){
   if(o>=192&&o<=223) return 24;    // C
   return null; // D/E/Loopback/Reservada → sin máscara host “real”
 }
-
 function calc(ip,p){
   const ipi=ipToInt(ip);
   const maskInt=p===0?0:((~0<<(32-p))>>>0);
@@ -143,16 +168,19 @@ function ipv4to6_real_2025(ip){
 
 /* ---------- Wildcard ---------- */
 function wildcard(mask){
-  const p=mask.split('.').map(n=>255-Number(n));
-  if(p.length!==4 || p.some(v=>Number.isNaN(v))) return 'Máscara inválida';
-  return p.join('.');
+  const oct = mask.split('.').map(n=>Number(n));
+  if(oct.length!==4 || oct.some(n=>Number.isNaN(n) || n<0 || n>255)){
+    return 'Máscara inválida';
+  }
+  const res = oct.map(n=>255-n);
+  return res.join('.');
 }
 
 /* ---------- DOM ---------- */
-const ipIn=document.getElementById('ipInput');
-const err=document.getElementById('error');
-const resBox=document.getElementById('results');
-const OUT={
+const ipIn  = document.getElementById('ipInput');
+const err   = document.getElementById('error');
+const resBox= document.getElementById('results');
+const OUT = {
   clase:document.getElementById('classOut'),
   mask:document.getElementById('maskOut'),
   maskNote:document.getElementById('maskNote'),
@@ -165,7 +193,7 @@ const OUT={
 };
 
 document.getElementById('calcBtn').onclick=()=>{
-  resBox.classList.remove('show'); // reset anim
+  resBox.classList.remove('show'); // reset animación
   const raw=ipIn.value.trim();
   if(!raw){
     err.textContent="Ingresa una IP.";
@@ -182,7 +210,7 @@ document.getElementById('calcBtn').onclick=()=>{
     err.textContent="⚠ IP fuera de rango real (octetos >255). Se mostrará cálculo solo a modo de práctica.";
   }
 
-  // Detectar clase y prefijo verdadero por clase (A/B/C). Otros → sin máscara real.
+  // Clase y prefijo real por clase
   const clase=detectClass(raw);
   const pref=classDefaultPrefix(raw);
 
@@ -190,18 +218,16 @@ document.getElementById('calcBtn').onclick=()=>{
   OUT.maskNote.textContent="";
 
   if(pref===null){
-    // No hay máscara host “real” (D/E/loopback/reservada). Usar /24 como práctica y avisar.
-    const fallback=24;
+    const fallback=24; // solo práctica para D/E/loopback/reservada
     const r=calc(raw, fallback);
     OUT.mask.textContent=r.mask;
-    OUT.maskNote.textContent=" (no existe máscara host clásica para esta IP; usando /24 para práctica)";
+    OUT.maskNote.textContent=" (sin máscara host clásica; usando /24 para práctica)";
     OUT.net.textContent=r.network;
     OUT.broad.textContent=r.broadcast;
     OUT.hosts.textContent=r.hosts;
     OUT.first.textContent=r.first;
     OUT.last.textContent=r.last;
   }else{
-    // Clase A/B/C → máscara verdadera
     const r=calc(raw, pref);
     OUT.mask.textContent=r.mask;
     OUT.net.textContent=r.network;
@@ -214,18 +240,24 @@ document.getElementById('calcBtn').onclick=()=>{
   OUT.ipv6.textContent=ipv4to6_real_2025(raw);
 
   resBox.style.display="block";
-  void resBox.offsetWidth; // reflow
+  // Reinicia la animación de aparición
+  void resBox.offsetWidth;
   resBox.classList.add('show');
 };
 
 document.getElementById('wildBtn').onclick=()=>{
   const mask=document.getElementById('maskInput').value.trim();
-  const out=document.getElementById('wildOut');
-  const row=document.getElementById('wildRow');
-  if(!mask){out.textContent="—";return}
-  if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(mask)){out.textContent="Máscara inválida";return}
-  out.textContent=wildcard(mask);
-  row.classList.remove('show'); void row.offsetWidth; row.classList.add('show');
+  const out =document.getElementById('wildOut');
+  const row =document.getElementById('wildRow');
+  const box =document.getElementById('wildResultBox');
+
+  if(!mask){ out.textContent="—"; return; }
+
+  const result = wildcard(mask);
+  out.textContent = result;
+
+  // animación para esa fila (sin depender de la clase del padre)
+  row.classList.remove('reveal'); void row.offsetWidth; row.classList.add('reveal');
 };
 
 document.getElementById('copyAll').onclick=()=>{
