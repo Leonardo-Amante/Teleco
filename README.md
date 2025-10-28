@@ -2,14 +2,14 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Telecom — Calculadora de Red y VELSM</title>
+<title>Telecom — Calculadora IPv4 & VELSM</title>
 <style>
 :root{
-  --bg1:#051423; --bg2:#0a2140; --bg3:#0f2f59;
+  --bg1:#061428; --bg2:#0a2144; --bg3:#0f2f5a;
   --glass:rgba(14,25,42,.56);
   --stroke:rgba(255,255,255,.08);
-  --accent:#00e5c1; --accent2:#a86bff; --muted:#9fb0c6;
-  --text:#e8f6ff;
+  --accent:#00e5c1; --accent2:#a86bff;
+  --muted:#9fb0c6; --text:#e8f6ff;
 }
 *{box-sizing:border-box}
 body{
@@ -19,8 +19,7 @@ body{
     radial-gradient(900px 600px at 8% 12%, #133a62 0%, transparent 55%),
     radial-gradient(800px 500px at 92% 88%, #241a6b 0%, transparent 60%),
     linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
-  background-size:140% 140%;
-  animation:bgshift 24s ease-in-out infinite;
+  background-size:140% 140%;animation:bgshift 24s ease-in-out infinite;
   display:flex;align-items:center;justify-content:center;padding:26px;position:relative;overflow:hidden;
 }
 @keyframes bgshift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
@@ -38,8 +37,7 @@ body{
     conic-gradient(from var(--a,0deg), var(--accent), var(--accent2), var(--accent), var(--accent2));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;
-  animation:borderSpin 10s linear infinite;
-  pointer-events:none;
+  animation:borderSpin 10s linear infinite;pointer-events:none;
 }
 @keyframes borderSpin{to{--a:360deg}}
 
@@ -50,14 +48,19 @@ h1{font-size:22px;margin:0}
 .lead{margin:6px 0 14px;color:var(--muted);font-size:13px}
 .info-msg{font-size:13px;color:var(--accent2);margin-bottom:10px}
 
+.topbar{position:fixed;top:10px;left:10px;right:10px;display:flex;gap:10px;justify-content:flex-end;z-index:5}
+.select{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);
+  color:#dff;border-radius:10px;padding:8px 10px;backdrop-filter:blur(6px);
+}
+
 .form-row{display:flex;gap:12px;margin-bottom:12px}
 .field{flex:1;display:flex;flex-direction:column;gap:8px}
 label{font-size:13px;color:var(--muted)}
 input,textarea{
   background:rgba(7,16,28,.55);border:1px solid rgba(255,255,255,.06);
   color:#e6f7ff;border-radius:10px;padding:12px;font-size:14px;outline:none;
-  transition:box-shadow .25s,border-color .25s;
-  position:relative;z-index:5;
+  transition:box-shadow .25s,border-color .25s;position:relative;z-index:5;
 }
 input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,229,193,.12)}
 .btn{
@@ -65,6 +68,7 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
   color:#00161a;border:none;border-radius:10px;padding:11px 14px;font-weight:800;cursor:pointer;
 }
 .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.12)}
+
 .cards{display:flex;flex-direction:column;gap:12px}
 .card{display:flex;justify-content:space-between;align-items:center;gap:10px;
   background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);
@@ -90,10 +94,8 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
 .circuit{position:absolute;height:2px;width:120vw;left:-10vw;filter:blur(.3px);
   background:linear-gradient(90deg,transparent 0%,rgba(0,229,193,.9)40%,rgba(168,107,255,.9)60%,transparent 100%);
   animation:scrollx 14s linear infinite;opacity:.22}
-.circuit:nth-child(1){top:18%}
-.circuit:nth-child(2){top:42%;animation-duration:18s}
-.circuit:nth-child(3){top:66%;animation-duration:16s}
-.circuit:nth-child(4){top:84%;animation-duration:20s}
+.circuit:nth-child(1){top:18%}.circuit:nth-child(2){top:42%;animation-duration:18s}
+.circuit:nth-child(3){top:66%;animation-duration:16s}.circuit:nth-child(4){top:84%;animation-duration:20s}
 @keyframes scrollx{to{transform:translateX(10vw)}}
 
 .dot{position:absolute;width:4px;height:4px;border-radius:50%;
@@ -106,6 +108,16 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
 </style>
 </head>
 <body>
+  <!-- Selector de paleta -->
+  <div class="topbar">
+    <select id="palette" class="select" title="Colores neón">
+      <option value="azulvioleta">Azul/Violeta</option>
+      <option value="verdeambar">Verde/Ámbar</option>
+      <option value="cianrosa">Cian/Rosa</option>
+      <option value="rojonar">Rojo/Naranja</option>
+    </select>
+  </div>
+
   <!-- decor -->
   <div class="led-strip led-top"></div>
   <div class="led-strip led-bottom"></div>
@@ -126,7 +138,7 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
         <div class="logo">TC</div>
         <div>
           <h1>Calculadora de Red — Telecom</h1>
-          <p class="lead">Detección automática de clase / máscara + VELSM</p>
+          <p class="lead">Funciona con cualquier IP y cualquier máscara (/0–/32). VELSM incluido.</p>
         </div>
       </div>
 
@@ -135,17 +147,17 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
       <div class="form-row">
         <div class="field">
           <label>IP / CIDR</label>
-          <input id="ipInput" placeholder="Ej: 10.0.0.1 o 192.168.1.0/24">
+          <input id="ipInput" placeholder="Ej: 8.8.8.8 o 172.20.10.0/20">
         </div>
         <div class="field" style="max-width:130px">
           <label>Prefijo</label>
-          <input id="prefixInput" type="number" min="1" max="32" placeholder="24">
+          <input id="prefixInput" type="number" min="0" max="32" placeholder="24">
         </div>
       </div>
 
       <div class="form-row">
         <div class="field"><label>Máscara</label><input id="maskOut" readonly></div>
-        <div class="field"><label>Hosts</label><input id="hostsOut" readonly></div>
+        <div class="field"><label>Hosts (usables)</label><input id="hostsOut" readonly></div>
       </div>
       <div class="form-row">
         <div class="field"><label>Red</label><input id="networkOut" readonly></div>
@@ -159,6 +171,7 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
       <div style="display:flex;gap:10px;margin-top:10px">
         <button class="btn" id="calcBtn">Calcular</button>
         <button class="btn ghost" id="clearBtn">Limpiar</button>
+        <button class="btn ghost" id="copyAll">Copiar todo</button>
       </div>
 
       <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,.1)">
@@ -184,7 +197,7 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
         <div class="card"><div><div class="title">Broadcast</div><div class="value" id="c_broadcast">—</div></div><button class="copy-btn" data-copy="c_broadcast">Copiar</button></div>
         <div class="card"><div><div class="title">Primera IP</div><div class="value" id="c_first">—</div></div><button class="copy-btn" data-copy="c_first">Copiar</button></div>
         <div class="card"><div><div class="title">Última IP</div><div class="value" id="c_last">—</div></div><button class="copy-btn" data-copy="c_last">Copiar</button></div>
-        <div class="card"><div><div class="title">Hosts</div><div class="value" id="c_hosts">—</div></div><button class="copy-btn" data-copy="c_hosts">Copiar</button></div>
+        <div class="card"><div><div class="title">Hosts (usables)</div><div class="value" id="c_hosts">—</div></div><button class="copy-btn" data-copy="c_hosts">Copiar</button></div>
       </div>
     </div>
   </div>
@@ -192,103 +205,105 @@ input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(
   <div class="firma">Hecho por Leonardo Amante</div>
 
 <script>
-// -------- Utilidades IPv4 --------
+// ------- Utilidades IPv4 (todas las máscaras /0–/32) -------
 function ipToInt(ip){
-  const p = ip.trim().split('.').map(Number);
-  if(p.length!==4 || p.some(n=>isNaN(n)||n<0||n>255)) throw Error('IP inválida');
+  const p=ip.trim().split('.').map(Number);
+  if(p.length!==4||p.some(n=>isNaN(n)||n<0||n>255)) throw Error('IP inválida');
   return ((p[0]<<24)|(p[1]<<16)|(p[2]<<8)|p[3])>>>0;
 }
 function intToIp(i){return[(i>>>24)&255,(i>>>16)&255,(i>>>8)&255,i&255].join('.')}
 function prefixToMask(p){return intToIp(p===0?0:(~0<<(32-p))>>>0)}
 function calc(ip,p){
-  const ipi = ipToInt(ip), maskInt=(~0<<(32-p))>>>0;
-  const n = ipi & maskInt, b = n | (~maskInt>>>0);
-  const hosts = (p>=31)?(p===31?2:1):(2**(32-p)-2);
-  const first  = p<=30 ? n+1 : (p===31?n:b);
-  const last   = p<=30 ? b-1 : (p===31?b:n);
+  const ipi=ipToInt(ip), maskInt=(p===0?0:((~0<<(32-p))>>>0));
+  const network = (p===0?0: (ipi & maskInt))>>>0;
+  const broadcast = (p===0?0xFFFFFFFF: (network | (~maskInt>>>0)))>>>0;
+  // hosts usables según prefijo
+  let hosts;
+  if(p===32) hosts=1;           // IP única
+  else if(p===31) hosts=2;      // enlace punto a punto (dos IPs)
+  else hosts = (2**(32-p))-2;   // subred tradicional
+  const first = (p<=30) ? (network+1) : (p===31?network:broadcast);
+  const last  = (p<=30) ? (broadcast-1) : (p===31?broadcast:network);
   return {
     ip, prefix:p, mask:prefixToMask(p),
-    network:intToIp(n), broadcast:intToIp(b),
-    first:intToIp(first), last:intToIp(last), hosts
+    network:intToIp(network), broadcast:intToIp(broadcast),
+    first:intToIp(first>>>0), last:intToIp(last>>>0), hosts
   };
 }
 
-// -------- Detección de clase --------
+// ------- Detección de clase (informativa) -------
 function detectClass(ip){
   const o1 = parseInt(ip.split('.')[0],10);
-  let clase='Desconocida', pref=24, mask='255.255.255.0';
-  if(o1>=1 && o1<=126){clase='A';pref=8;mask='255.0.0.0'}
-  else if(o1>=128 && o1<=191){clase='B';pref=16;mask='255.255.0.0'}
-  else if(o1>=192 && o1<=223){clase='C';pref=24;mask='255.255.255.0'}
-  else if(o1>=224 && o1<=239){clase='D (Multicast)';pref='—';mask='—'}
-  else if(o1>=240 && o1<=254){clase='E (Experimental)';pref='—';mask='—'}
+  let clase='Desconocida'; if(o1>=1&&o1<=126)clase='A'; else if(o1>=128&&o1<=191)clase='B';
+  else if(o1>=192&&o1<=223)clase='C'; else if(o1>=224&&o1<=239)clase='D (Multicast)'; else if(o1>=240&&o1<=254)clase='E (Experimental)';
   let priv=''; if(ip.startsWith('10.'))priv=' — IP Privada';
   else if(/^172\.(1[6-9]|2[0-9]|3[01])\./.test(ip)) priv=' — IP Privada';
   else if(ip.startsWith('192.168.')) priv=' — IP Privada';
   document.getElementById('info').textContent = `Clase ${clase}${priv}`;
-  return {clase,pref,mask};
 }
 
-// -------- DOM refs --------
-const ipIn=document.getElementById('ipInput'), pIn=document.getElementById('prefixInput');
-const mOut=document.getElementById('maskOut'), hOut=document.getElementById('hostsOut');
-const nOut=document.getElementById('networkOut'), bOut=document.getElementById('broadcastOut');
-const fOut=document.getElementById('firstOut'), lOut=document.getElementById('lastOut');
-const err=document.getElementById('errorMsg'), resV=document.getElementById('velsmResult');
+// ------- DOM refs -------
+const ipIn=document.getElementById('ipInput');
+const pIn=document.getElementById('prefixInput');
+const mOut=document.getElementById('maskOut');
+const hOut=document.getElementById('hostsOut');
+const nOut=document.getElementById('networkOut');
+const bOut=document.getElementById('broadcastOut');
+const fOut=document.getElementById('firstOut');
+const lOut=document.getElementById('lastOut');
+const err=document.getElementById('errorMsg');
+const resV=document.getElementById('velsmResult');
 
-// Panel de resultados (lado derecho)
 const R = {
-  ip:document.getElementById('c_ip'), prefix:document.getElementById('c_prefix'),
-  mask:document.getElementById('c_mask'), network:document.getElementById('c_network'),
-  broadcast:document.getElementById('c_broadcast'), first:document.getElementById('c_first'),
-  last:document.getElementById('c_last'), hosts:document.getElementById('c_hosts')
+  ip:document.getElementById('c_ip'),
+  prefix:document.getElementById('c_prefix'),
+  mask:document.getElementById('c_mask'),
+  network:document.getElementById('c_network'),
+  broadcast:document.getElementById('c_broadcast'),
+  first:document.getElementById('c_first'),
+  last:document.getElementById('c_last'),
+  hosts:document.getElementById('c_hosts')
 };
 
-// Autocompletar clase/máscara mientras escribe
+// Autodetección informativa (no limita)
 ipIn.addEventListener('input', ()=>{
   const v = ipIn.value.trim();
-  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(v)){
-    const d = detectClass(v);
-    if(d.pref !== '—'){ pIn.value = d.pref; mOut.value = d.mask; }
-  } else {
-    document.getElementById('info').textContent = 'Clase: —';
-  }
+  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(v)) detectClass(v);
+  else document.getElementById('info').textContent='Clase: —';
 });
 
-// Calcular
+// Calcular para cualquier /0–/32
 document.getElementById('calcBtn').onclick = ()=>{
   try{
     err.style.display='none';
-    let ip = ipIn.value.trim(), pref = pIn.value?parseInt(pIn.value,10):undefined;
+    let ip = ipIn.value.trim(), pref = pIn.value!=='' ? parseInt(pIn.value,10) : undefined;
     if(ip.includes('/')){ const [a,b]=ip.split('/'); ip=a; pref=parseInt(b,10); }
     if(!ip) throw Error('Ingresa una IP válida');
-    if(!Number.isInteger(pref) || pref<0 || pref>32) throw Error('Prefijo inválido');
+    if(!Number.isInteger(pref) || pref<0 || pref>32) throw Error('Prefijo inválido (0–32)');
     const r = calc(ip,pref);
 
-    // Llenar campos de la izquierda
-    mOut.value=r.mask; hOut.value=r.hosts; nOut.value=r.network; bOut.value=r.broadcast; fOut.value=r.first; lOut.value=r.last;
+    // Izquierda
+    mOut.value=r.mask; hOut.value=r.hosts; nOut.value=r.network;
+    bOut.value=r.broadcast; fOut.value=r.first; lOut.value=r.last;
 
-    // Llenar panel derecho
-    R.ip.textContent=r.ip; R.prefix.textContent=r.prefix;
-    R.mask.textContent=r.mask; R.network.textContent=r.network;
-    R.broadcast.textContent=r.broadcast; R.first.textContent=r.first;
-    R.last.textContent=r.last; R.hosts.textContent=r.hosts;
+    // Derecha
+    R.ip.textContent=r.ip; R.prefix.textContent=r.prefix; R.mask.textContent=r.mask;
+    R.network.textContent=r.network; R.broadcast.textContent=r.broadcast;
+    R.first.textContent=r.first; R.last.textContent=r.last; R.hosts.textContent=r.hosts;
 
     resV.textContent='—';
-  }catch(e){
-    err.textContent=e.message; err.style.display='block';
-  }
+  }catch(e){ err.textContent=e.message; err.style.display='block'; }
 };
 
 // Limpiar
-document.getElementById('clearBtn').onclick = ()=>{
+document.getElementById('clearBtn').onclick=()=>{
   document.querySelectorAll('input,textarea').forEach(el=>el.value='');
   Object.values(R).forEach(el=>el.textContent='—');
   resV.textContent='—'; err.style.display='none';
-  document.getElementById('info').textContent = 'Clase: —';
+  document.getElementById('info').textContent='Clase: —';
 };
 
-// Copiar
+// Copiar por tarjeta
 document.querySelectorAll('.copy-btn').forEach(btn=>{
   btn.addEventListener('click', async ()=>{
     const id = btn.getAttribute('data-copy');
@@ -297,18 +312,52 @@ document.querySelectorAll('.copy-btn').forEach(btn=>{
   });
 });
 
+// Copiar todo
+document.getElementById('copyAll').onclick = async ()=>{
+  const summary =
+`IP: ${R.ip.textContent}
+Prefijo: ${R.prefix.textContent}
+Máscara: ${R.mask.textContent}
+Red: ${R.network.textContent}
+Broadcast: ${R.broadcast.textContent}
+Primera IP: ${R.first.textContent}
+Última IP: ${R.last.textContent}
+Hosts (usables): ${R.hosts.textContent}`;
+  try{ await navigator.clipboard.writeText(summary); alert('Resultados copiados.'); }catch(e){ alert('No se pudo copiar.'); }
+};
+
 // VELSM
 document.getElementById('exampleBtn').onclick=()=>{document.getElementById('formula').value='hosts * 1.5'};
 document.getElementById('evalBtn').onclick=()=>{
   try{
     const hosts = parseFloat(hOut.value)||0;
-    const prefix = parseFloat(pIn.value)||0;
+    const prefix = pIn.value!==''?parseFloat(pIn.value):0;
     const expr = document.getElementById('formula').value.trim();
     if(!expr) return;
     const val = Function('hosts','prefix','return '+expr)(hosts,prefix);
     resV.textContent = String(val);
   }catch(e){ err.textContent=e.message; err.style.display='block'; }
 };
+
+// -------- Selector de paleta (persistente) --------
+const paletteSel = document.getElementById('palette');
+const palettes = {
+  azulvioleta: ['#00e5c1','#a86bff'],
+  verdeambar:  ['#12d27c','#ffb020'],
+  cianrosa:    ['#00d8ff','#ff5ac4'],
+  rojonar:     ['#ff3b3b','#ff9b00']
+};
+function applyPalette(name){
+  const [a,b] = palettes[name] || palettes.azulvioleta;
+  document.documentElement.style.setProperty('--accent', a);
+  document.documentElement.style.setProperty('--accent2', b);
+  localStorage.setItem('palette', name);
+}
+paletteSel.addEventListener('change', ()=>applyPalette(paletteSel.value));
+(function initPalette(){
+  const saved = localStorage.getItem('palette') || 'azulvioleta';
+  paletteSel.value = saved; applyPalette(saved);
+})();
 </script>
 </body>
 </html>
