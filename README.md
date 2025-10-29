@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
@@ -147,7 +146,7 @@ footer{text-align:right;padding:20px 30px;color:rgba(255,255,255,.4)}
    Reemplaza el valor "AQUI_TU_TOKEN_HF" por tu token real.
    EJEMPLO: "hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
    ================================================ */
-const HF_TOKEN = "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";
+const HF_TOKEN = "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";
 /* ================================================ */
 
 /* ------------ Utilidades IPv4 ------------ */
