@@ -146,7 +146,7 @@ footer{text-align:right;padding:20px 30px;color:rgba(255,255,255,.4)}
    Reemplaza el valor "AQUI_TU_TOKEN_HF" por tu token real.
    EJEMPLO: "hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
    ================================================ */
-const HF_TOKEN = "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";
+const HF_TOKEN = "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";
 /* ================================================ */
 
 /* ------------ Utilidades IPv4 ------------ */
