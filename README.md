@@ -92,8 +92,8 @@ footer{text-align:right;padding:20px 30px;color:rgba(255,255,255,.4)}
 <div class="panel">
   <h1>Calculadora IPv4</h1>
   <label>Dirección IP</label>
-  <input id="ipInput" placeholder="Ej: 10.10.10.10 o 192.168.1.1">
-  <div class="warning">Se detecta automáticamente la <b>máscara real por clase</b> (A=/8, B=/16, C=/24) al apretar “Calcular”.</div>
+  <input id="ipInput" placeholder="Ej: 10.0.0.0 o 192.168.0.0">
+  <div class="warning">Se detecta automáticamente por clase</b> (A=/8, B=/16, C=/24) al apretar “Calcular”.</div>
   <button id="calcBtn">Calcular</button>
   <div id="error" class="warning"></div>
 
@@ -146,7 +146,7 @@ footer{text-align:right;padding:20px 30px;color:rgba(255,255,255,.4)}
    Reemplaza el valor "AQUI_TU_TOKEN_HF" por tu token real.
    EJEMPLO: "hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
    ================================================ */
-const HF_TOKEN = "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";
+const HF_TOKEN = "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";
 /* ================================================ */
 
 /* ------------ Utilidades IPv4 ------------ */
